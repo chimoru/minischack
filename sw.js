@@ -54,7 +54,8 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith((async () => {
     if (DEV) {
-      try { return await fetch(event.request, { cache: 'no-store' }); } catch { /* servern nere – ta kopian */ }
+      // 'reload' = hämta alltid från servern och skriv över webbläsarens gamla kopia
+      try { return await fetch(event.request, { cache: 'reload' }); } catch { /* servern nere – ta kopian */ }
     }
     const cached = await caches.match(event.request, { ignoreSearch: true });
     if (cached) return cached;

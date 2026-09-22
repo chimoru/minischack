@@ -17,7 +17,8 @@ let opts;           // { mode: 'friend' | 'computer', level, onExit }
 let selected = -1;
 let lastMove = null;
 let arrived = -1;
-let busy = false;   // true medan datorn tänker eller en popup visas
+let busy = false;   // true medan datorn tänker, en pjäs glider eller en popup visas
+let paused = false; // true medan "Vill du sluta spela?" visas
 let status = { over: false };
 let token = 0;      // ökar vid nytt parti, så gamla datordrag ignoreras
 
@@ -30,7 +31,7 @@ export function startGame(options) {
   token++;
   board ??= new BoardView(document.getElementById('board'), onSquare);
   game = newGame(opts.fen);
-  selected = -1; lastMove = null; arrived = -1; busy = false;
+  selected = -1; lastMove = null; arrived = -1; busy = false; paused = false;
   status = gameStatus(game);
   update();
 }
@@ -39,12 +40,12 @@ const humanColor = () => (opts.mode === 'computer' ? 'w' : game.turn);
 const style = () => store.settings.pieceStyle;
 
 function onSquare(sq) {
-  if (busy || status.over || game.turn !== humanColor()) return;
+  if (busy || paused || status.over || game.turn !== humanColor()) return;
   const p = game.board[sq];
 
   if (selected >= 0) {
     const moves = legalMoves(game, selected).filter((m) => m.to === sq);
-    if (moves.length) { chooseMove(moves); return; }
+    if (moves.length) { chooseMove(moves, board.dropped); return; }
     if (sq === selected) { selected = -1; update(); return; }   // tryck igen = släpp pjäsen
   }
 
@@ -61,7 +62,7 @@ function onSquare(sq) {
   sfx('nope');
 }
 
-async function chooseMove(moves) {
+async function chooseMove(moves, dropped) {
   let move = moves[0];
   if (moves.length > 1) {          // flera drag till samma ruta = bondeförvandling
     busy = true;
@@ -74,14 +75,36 @@ async function chooseMove(moves) {
     busy = false;
     move = moves.find((m) => typeOf(m.promotion) === choice);
   }
-  doMove(move);
+  doMove(move, dropped ? 0 : SLIDE_TAP_MS);   // dragen pjäs står redan på plats
 }
 
-function doMove(m) {
+// Hur länge pjäserna glider till sin nya ruta. Datorns drag går långsamt, så barnet
+// hinner se vilken pjäs som flyttade och varifrån.
+const SLIDE_COMPUTER_MS = 700;
+const SLIDE_TAP_MS = 200;
+
+// Vilka pjäser som rör sig i ett drag (vid rockad flyttar även tornet)
+function slidesFor(m) {
+  const slides = [{ from: m.from, to: m.to, piece: m.piece }];
+  const rook = m.piece === 'K' ? 'R' : 'r';
+  if (m.flag === 'castleK') slides.push({ from: m.to + 1, to: m.to - 1, piece: rook });
+  if (m.flag === 'castleQ') slides.push({ from: m.to - 2, to: m.to + 1, piece: rook });
+  return slides;
+}
+
+async function doMove(m, slideMs = 0) {
+  selected = -1;
+  if (slideMs) {
+    busy = true;
+    update();                        // ta bort gröna rutor innan pjäsen glider
+    const my = token;
+    await board.slide(slidesFor(m), slideMs, style());
+    if (my !== token) return;        // partiet avslutades medan pjäsen gled
+    busy = false;
+  }
   playMove(game, m);
   lastMove = m;
-  arrived = m.to;
-  selected = -1;
+  arrived = slideMs ? -1 : m.to;     // "hopp"-effekten behövs bara om pjäsen inte gled dit
   status = gameStatus(game);
 
   if (status.result === 'checkmate') sfx('mate');
@@ -104,7 +127,7 @@ async function askComputer() {
   const m = await computerMove(game, opts.level);
   if (my !== token) return;          // partiet har avslutats under tiden
   busy = false;
-  doMove(m);
+  doMove(m, SLIDE_COMPUTER_MS);
 }
 
 // ---------- Vems tur ----------
@@ -181,12 +204,11 @@ async function showResult() {
 
 export async function confirmExit() {
   if (status.over || !lastMove) { opts.onExit(); return; }
-  const wasBusy = busy;
-  busy = true;
+  paused = true;
   const choice = await popup('<div class="popup-emoji">🏠</div><h2>Vill du sluta spela?</h2>', [
     { html: 'Ja, till menyn', className: 'btn-coral', value: true },
     { html: 'Nej, spela vidare', className: 'btn-green', value: false },
   ]);
-  busy = wasBusy;
+  paused = false;
   if (choice) { token++; opts.onExit(); }
 }

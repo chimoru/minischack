@@ -27,6 +27,7 @@ let state = null;        // schackställning med bara vår pjäs (och ibland en 
 let pieceSq = -1;
 let star = -1;
 let caught = 0;
+let sliding = false;     // en pjäs är på väg – vänta med nästa tryck
 
 const style = () => store.settings.pieceStyle;
 const random = (list) => list[Math.floor(Math.random() * list.length)];
@@ -124,16 +125,22 @@ function render() {
     hints: legalMoves(state, pieceSq).map((m) => ({ to: m.to, capture: !!m.captured })),
     style: style(),
     stars: [star],
-    arrived: pieceSq,
   });
   document.getElementById('learn-stars').innerHTML = Array.from({ length: STARS_TO_LEARN },
     (_, i) => `<span class="${i < caught ? 'got' : ''}">⭐</span>`).join('');
 }
 
 async function onSquare(sq) {
-  if (!current || sq === pieceSq) return;
+  if (!current || sliding || sq === pieceSq) return;
   const move = legalMoves(state, pieceSq).find((m) => m.to === sq && (!m.promotion || m.promotion === 'Q'));
   if (!move) { board.shake(sq); sfx('nope'); return; }
+
+  // Låt pjäsen glida dit (utom när den dragits med fingret – då är den redan där)
+  const practising = current;
+  sliding = true;
+  await board.slide([{ from: pieceSq, to: sq, piece: move.piece }], board.dropped ? 0 : 250, style());
+  sliding = false;
+  if (current !== practising) return;   // man gick tillbaka under tiden
 
   makeMove(state, move);
   state.turn = 'w';                  // här är det alltid vår tur

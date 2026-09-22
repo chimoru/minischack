@@ -26,6 +26,14 @@ node tests/ai.test.mjs 4      # nivåerna mot varandra (tar några minuter)
 ```
 
 ## Förhandsvisning lokalt
+Kör `python3 tools/dev-server.py` (port 8766) – den skickar `Cache-Control: no-store`.
+Vanliga `python3 -m http.server` ska INTE användas: webbläsaren sparar då gamla kopior av
+modulerna och kör gammal kod blandat med ny.
+Förhandsvisningen läser `.claude/launch.json` i mappen *Claude Users Tool*, inte här.
+
 På `localhost` hämtar service workern alltid färska filer först (sparad kopia bara om
-servern är nere), så ändringar syns direkt. På riktiga adressen gäller sparad kopia först.
+servern är nere). På riktiga adressen gäller sparad kopia först.
 Offline kan testas lokalt genom att stoppa servern och ladda om.
+
+Testa med **riktiga** klick/dragningar (inte bara syntetiska `pointerdown`) – ett riktigt
+tryck skickar även ett `click` efteråt, och det har orsakat buggar tidigare.

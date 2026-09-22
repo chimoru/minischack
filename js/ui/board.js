@@ -69,7 +69,42 @@ export class BoardView {
     this.endDrag();
     if (!g.moved) return;                      // vanligt tryck – redan hanterat i down()
     const target = this.squareAt(e.clientX, e.clientY);
-    if (target >= 0 && target !== g.sq) this.onSquare(target);
+    if (target < 0 || target === g.sq) return;
+    this.dropped = true;                       // draget kom från en dragning – ingen glidning behövs
+    try { this.onSquare(target); } finally { this.dropped = false; }
+  }
+
+  // Låter pjäser glida från sin ruta till den nya, så man ser hur draget gick.
+  // slides: [{ from, to, piece }] – flera samtidigt, t.ex. kung + torn vid rockad.
+  // Brädet visar fortfarande ställningen FÖRE draget medan pjäserna glider.
+  async slide(slides, ms, style) {
+    if (!ms || !Element.prototype.animate) return;
+    const ghosts = slides.map(({ from, to, piece }) => {
+      const a = this.squares[from].getBoundingClientRect();
+      const b = this.squares[to].getBoundingClientRect();
+      const ghost = document.createElement('div');
+      ghost.className = 'slide-ghost';
+      Object.assign(ghost.style, {
+        left: `${a.left}px`, top: `${a.top}px`, width: `${a.width}px`, height: `${a.height}px`,
+      });
+      ghost.innerHTML = pieceSVG(piece, style);
+      document.body.appendChild(ghost);
+      const orig = this.squares[from].querySelector('.piece');
+      if (orig) orig.style.opacity = '0';
+      const dx = b.left - a.left, dy = b.top - a.top;
+      const anim = ghost.animate([
+        { transform: 'translate(0, 0) scale(1)' },
+        { transform: `translate(${dx / 2}px, ${dy / 2}px) scale(1.25)`, offset: 0.5 },
+        { transform: `translate(${dx}px, ${dy}px) scale(1)` },
+      ], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
+      return { ghost, anim, orig };
+    });
+    await Promise.all(ghosts.map((g) => g.anim.finished.catch(() => {})));
+    // Spökena tas bort först när brädet ritats om (i nästa bildruta), så inget blinkar
+    requestAnimationFrame(() => ghosts.forEach((g) => {
+      g.ghost.remove();
+      if (g.orig) g.orig.style.opacity = '';
+    }));
   }
 
   endDrag() {

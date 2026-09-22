@@ -4,7 +4,10 @@
     {
       "name": "minischack",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8766"],
+      "runtimeArgs": [
+        "tools/dev-server.py",
+        "8766"
+      ],
       "port": 8766
     }
   ]
