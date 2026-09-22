@@ -3,6 +3,7 @@ import { store } from './storage.js';
 import { startGame, confirmExit, setComputerPlayer } from './ui/game.js';
 import { computerMove } from './ui/computer.js';
 import { renderSettings } from './ui/settings.js';
+import { initLearn, showPicker } from './ui/learn.js';
 
 export const LEVELS = [
   { id: 'chick', emoji: '🐣', name: 'Kyckling', hint: 'Jättelätt', color: 'btn-yellow' },
@@ -20,6 +21,7 @@ export function show(name) {
   if (name === 'menu') renderMenu();
   if (name === 'settings') renderSettings();
   if (name === 'levels') renderLevels();
+  if (name === 'learn') showPicker();
   window.scrollTo(0, 0);
 }
 
@@ -104,4 +106,5 @@ document.getElementById('game-back').addEventListener('click', confirmExit);
 
 // ---------- Start ----------
 setComputerPlayer(computerMove);
+initLearn(() => show('menu'));
 show(store.name ? 'menu' : 'name');

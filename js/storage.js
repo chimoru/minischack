@@ -8,6 +8,7 @@ const DEFAULTS = {
   name: '',
   wins: { chick: 0, bunny: 0, fox: 0, owl: 0 },
   settings: { sound: true, teaching: true, pieceStyle: 'kids' },
+  learned: [],          // pjäser man klarat i "Lär dig pjäserna"
 };
 
 let data = load();
@@ -22,6 +23,7 @@ function load() {
         ...saved,
         wins: { ...DEFAULTS.wins, ...saved.wins },
         settings: { ...DEFAULTS.settings, ...saved.settings },
+        learned: Array.isArray(saved.learned) ? saved.learned : [],
       };
     }
   } catch { /* ignorera – vi börjar om från standardvärden */ }
@@ -42,4 +44,7 @@ export const store = {
   get wins() { return data.wins; },
   get totalWins() { return Object.values(data.wins).reduce((a, b) => a + b, 0); },
   addWin(level) { data.wins[level] = (data.wins[level] || 0) + 1; save(); },
+
+  get learned() { return data.learned; },
+  addLearned(type) { if (!data.learned.includes(type)) { data.learned.push(type); save(); } },
 };

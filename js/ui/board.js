@@ -22,7 +22,7 @@ export class BoardView {
     });
   }
 
-  // opts: { selected, hints: [{to, capture}], lastMove, checkSq, style, arrived }
+  // opts: { selected, hints: [{to, capture}], lastMove, checkSq, style, arrived, stars: [sq] }
   render(board, opts = {}) {
     const hints = new Map((opts.hints ?? []).map((h) => [h.to, h.capture]));
     for (let sq = 0; sq < 64; sq++) {
@@ -34,9 +34,10 @@ export class BoardView {
       d.classList.toggle('hint', hints.has(sq) && !hints.get(sq));
       d.classList.toggle('hint-capture', hints.get(sq) === true);
 
-      const key = p ? `${p}-${opts.style}` : '';
+      const star = opts.stars?.includes(sq);
+      const key = `${p ? `${p}-${opts.style}` : ''}${star ? '*' : ''}`;
       if (d.dataset.piece !== key) {
-        d.innerHTML = p ? pieceSVG(p, opts.style) : '';
+        d.innerHTML = (p ? pieceSVG(p, opts.style) : '') + (star ? '<span class="star-mark">⭐</span>' : '');
         d.dataset.piece = key;
       }
       if (p && sq === opts.arrived) {
