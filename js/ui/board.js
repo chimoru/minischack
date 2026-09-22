@@ -15,11 +15,68 @@ export class BoardView {
       el.appendChild(d);
       this.squares.push(d);
     }
-    // pointerdown i stället för click: svarar direkt vid beröring på iPad
-    el.addEventListener('pointerdown', (e) => {
-      const sq = e.target.closest('.sq')?.dataset.sq;
-      if (sq !== undefined) onSquare(Number(sq));
-    });
+    this.onSquare = onSquare;
+    this.drag = null;
+    // Två sätt att flytta, som båda fungerar:
+    //   tryck på pjäsen, tryck på rutan  – eller –  dra pjäsen med fingret och släpp
+    el.addEventListener('pointerdown', (e) => this.down(e));
+    el.addEventListener('pointermove', (e) => this.move(e));
+    el.addEventListener('pointerup', (e) => this.up(e));
+    el.addEventListener('pointercancel', () => this.endDrag());
+  }
+
+  squareAt(x, y) {
+    const sq = document.elementFromPoint(x, y)?.closest('.sq');
+    return sq && this.el.contains(sq) ? Number(sq.dataset.sq) : -1;
+  }
+
+  down(e) {
+    const sqEl = e.target.closest('.sq');
+    if (!sqEl) return;
+    const sq = Number(sqEl.dataset.sq);
+    this.endDrag();
+    this.onSquare(sq);   // pointerdown i stället för click: svarar direkt vid beröring
+
+    // Är pjäsen nu vald kan den dras. "Spöket" följer fingret tills man släpper.
+    const d = this.squares[sq];
+    const svg = d.querySelector('.piece');
+    if (!svg || !d.classList.contains('selected')) return;
+    const rect = d.getBoundingClientRect();
+    const ghost = document.createElement('div');
+    ghost.className = 'drag-ghost';
+    ghost.style.width = ghost.style.height = `${rect.width * 1.25}px`;
+    ghost.innerHTML = svg.outerHTML;
+    this.drag = { sq, ghost, svg, x0: e.clientX, y0: e.clientY, moved: false, id: e.pointerId };
+    // Fånga fingret, så brädet får höra var det släpps även utanför rutan man började på
+    try { this.el.setPointerCapture(e.pointerId); } catch { /* äldre webbläsare */ }
+  }
+
+  move(e) {
+    const g = this.drag;
+    if (!g || e.pointerId !== g.id) return;
+    if (!g.moved && Math.hypot(e.clientX - g.x0, e.clientY - g.y0) < 8) return;   // bara ett tryck
+    if (!g.moved) {
+      g.moved = true;
+      document.body.appendChild(g.ghost);
+      g.svg.style.opacity = '0.3';
+    }
+    g.ghost.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -60%)`;
+  }
+
+  up(e) {
+    const g = this.drag;
+    if (!g || e.pointerId !== g.id) return;
+    this.endDrag();
+    if (!g.moved) return;                      // vanligt tryck – redan hanterat i down()
+    const target = this.squareAt(e.clientX, e.clientY);
+    if (target >= 0 && target !== g.sq) this.onSquare(target);
+  }
+
+  endDrag() {
+    if (!this.drag) return;
+    this.drag.ghost.remove();
+    this.drag.svg.style.opacity = '';
+    this.drag = null;
   }
 
   // opts: { selected, hints: [{to, capture}], lastMove, checkSq, style, arrived, stars: [sq] }
@@ -36,9 +93,9 @@ export class BoardView {
 
       const star = opts.stars?.includes(sq);
       const key = `${p ? `${p}-${opts.style}` : ''}${star ? '*' : ''}`;
-      if (d.dataset.piece !== key) {
+      if (d.dataset.drawn !== key) {       // rita bara om rutan när något ändrats
         d.innerHTML = (p ? pieceSVG(p, opts.style) : '') + (star ? '<span class="star-mark">⭐</span>' : '');
-        d.dataset.piece = key;
+        d.dataset.drawn = key;
       }
       if (p && sq === opts.arrived) {
         const svg = d.querySelector('.piece');

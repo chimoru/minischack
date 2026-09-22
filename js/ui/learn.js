@@ -57,8 +57,9 @@ export function showPicker() {
 }
 
 content.addEventListener('click', (e) => {
-  const type = e.target.closest('[data-piece]')?.dataset.piece;
-  if (type) startPractice(PIECES.find((p) => p.type === type));
+  const type = e.target.closest('.learn-choice')?.dataset.piece;
+  const piece = PIECES.find((p) => p.type === type);
+  if (piece) startPractice(piece);
 });
 
 // ---------- Öva ----------
