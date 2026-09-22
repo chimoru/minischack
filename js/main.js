@@ -14,7 +14,12 @@ export const LEVELS = [
 
 const screens = ['name', 'menu', 'levels', 'game', 'learn', 'settings'];
 
+let current = null;
+let updateWaiting = false;   // en ny version har installerats – ladda om när det passar
+
 export function show(name) {
+  current = name;
+  if (updateWaiting && name === 'menu') { location.reload(); return; }
   for (const s of screens) {
     document.getElementById(`screen-${s}`).hidden = s !== name;
   }
@@ -103,6 +108,19 @@ function play(options) {
 }
 
 document.getElementById('game-back').addEventListener('click', confirmExit);
+
+// ---------- Offline (service worker) ----------
+// Sparar appen på enheten. Kommer en ny version laddas sidan om – men aldrig mitt i ett
+// parti: då väntar vi tills man är tillbaka i menyn.
+if ('serviceWorker' in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js').catch(() => { /* appen fungerar ändå, bara inte offline */ });
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) return;               // första installationen – inget att uppdatera
+    if (current === 'menu' || current === 'name') location.reload();
+    else updateWaiting = true;
+  });
+}
 
 // ---------- Start ----------
 setComputerPlayer(computerMove);
