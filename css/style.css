@@ -1,0 +1,254 @@
+/* MiniSchack – lekfullt tema runt ett klassiskt bräde */
+
+:root {
+  --bg: #fff6df;
+  --bg-dot: #ffe9b0;
+  --ink: #3b2a1a;
+  --ink-soft: #7a6450;
+  --card: #ffffff;
+  --shadow: 0 6px 0 rgba(59, 42, 26, 0.15);
+
+  --yellow: #ffd34d;
+  --blue: #4fa8ff;
+  --coral: #ff7a6b;
+  --green: #4cc38a;
+  --purple: #a77bf3;
+
+  /* Brädet: klassiska träfärger */
+  --sq-light: #f0d9b5;
+  --sq-dark: #b58863;
+  --hint: rgba(46, 160, 67, 0.55);
+  --last-move: rgba(255, 211, 77, 0.55);
+  --check: rgba(255, 60, 60, 0.7);
+
+  --radius: 22px;
+  --font: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  background-image: radial-gradient(var(--bg-dot) 2px, transparent 2px);
+  background-size: 26px 26px;
+  color: var(--ink);
+  font-family: var(--font);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+}
+
+#app {
+  min-height: 100%;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+           max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.screen { display: flex; flex-direction: column; gap: 18px; min-height: 100%; }
+.screen[hidden] { display: none; }
+
+h1, h2 { margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(28px, 6vw, 44px); }
+h2 { font-size: clamp(22px, 4.5vw, 32px); }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.center { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+/* ---------- Knappar ---------- */
+.btn {
+  font: inherit;
+  font-weight: 800;
+  font-size: 20px;
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 14px 22px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+  transition: transform 0.08s, box-shadow 0.08s;
+  background: var(--blue);
+}
+.btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18); }
+.btn-blue { background: var(--blue); }
+.btn-coral { background: var(--coral); }
+.btn-green { background: var(--green); }
+.btn-purple { background: var(--purple); }
+.btn-yellow { background: var(--yellow); color: var(--ink); }
+.btn-white { background: #fff; color: var(--ink); }
+
+.btn-big {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; min-height: 130px; font-size: clamp(20px, 4vw, 26px);
+}
+.btn-icon { font-size: 48px; line-height: 1; }
+
+.btn-round {
+  width: 56px; height: 56px; padding: 0; flex: none;
+  border-radius: 50%; font-size: 26px;
+  background: #fff; color: var(--ink);
+}
+
+/* ---------- Namnskärm ---------- */
+.mascot { font-size: 96px; line-height: 1; }
+#name-form { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 360px; }
+.big-input {
+  font: inherit; font-size: 26px; font-weight: 700; text-align: center;
+  padding: 14px; border-radius: var(--radius);
+  border: 4px solid var(--yellow); outline: none; color: var(--ink);
+  -webkit-user-select: text; user-select: text;
+}
+.big-input:focus { border-color: var(--blue); }
+
+/* ---------- Meny ---------- */
+.menu-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.logo { color: var(--coral); text-shadow: 0 4px 0 rgba(0, 0, 0, 0.08); }
+.logo span { color: var(--blue); }
+.profile-chip {
+  font: inherit; font-weight: 800; font-size: 20px; color: var(--ink);
+  background: #fff; border: 0; border-radius: 999px; padding: 10px 18px;
+  box-shadow: var(--shadow); cursor: pointer;
+}
+.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.trophy { display: flex; align-items: center; gap: 16px; }
+.trophy-cup { font-size: 64px; line-height: 1; }
+.trophy-text { font-size: 22px; font-weight: 800; }
+.trophy-badges { font-size: 30px; margin-top: 4px; }
+.trophy-badges .locked { filter: grayscale(1); opacity: 0.3; }
+
+/* ---------- Toppfält ---------- */
+.top-bar { display: flex; align-items: center; gap: 14px; }
+
+/* ---------- Nivåer ---------- */
+.level-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.level-grid .btn-big small { font-size: 16px; font-weight: 700; opacity: 0.9; }
+
+/* ---------- Spel ---------- */
+.turn-banner {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-size: clamp(20px, 4.5vw, 28px); font-weight: 800;
+  padding: 10px 16px; border-radius: 999px; background: #fff; box-shadow: var(--shadow);
+  min-height: 56px;
+}
+.board-wrap { display: flex; justify-content: center; }
+.board {
+  --size: min(calc(100vw - 32px), calc(100vh - 140px), 760px);
+  width: var(--size); height: var(--size);
+  display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
+  border: 10px solid #7b5234; border-radius: 12px; box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* ---------- Popup ---------- */
+.overlay {
+  position: fixed; inset: 0; background: rgba(59, 42, 26, 0.45);
+  display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10;
+}
+.overlay[hidden] { display: none; }
+.popup { max-width: 520px; width: 100%; text-align: center; display: flex; flex-direction: column; gap: 16px; }
+
+@media (max-width: 420px) {
+  .btn-big { min-height: 110px; }
+  .btn-icon { font-size: 40px; }
+}
+
+/* ---------- Rutor och pjäser ---------- */
+.sq {
+  position: relative; border: 0; padding: 0; margin: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; touch-action: manipulation;
+}
+.sq.light { background: var(--sq-light); }
+.sq.dark { background: var(--sq-dark); }
+.sq.last::before, .sq.selected::before, .sq.in-check::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+}
+.sq.last::before { background: var(--last-move); }
+.sq.selected::before { background: rgba(79, 168, 255, 0.55); }
+.sq.in-check::before { background: radial-gradient(circle, var(--check) 20%, transparent 75%); }
+
+/* Giltiga drag: grön prick på tom ruta, grön ring runt pjäs som kan tas */
+.sq.hint::after, .sq.hint-capture::after {
+  content: ''; position: absolute; pointer-events: none; border-radius: 50%;
+}
+.sq.hint::after { width: 34%; height: 34%; background: var(--hint); }
+.sq.hint-capture::after { inset: 4%; border: 6px solid var(--hint); }
+
+.piece { width: 88%; height: 88%; position: relative; z-index: 1; pointer-events: none; }
+.piece.pop { animation: pop 0.25s ease-out; }
+@keyframes pop { 0% { transform: scale(0.7); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+.sq.nope { animation: nope 0.3s; }
+@keyframes nope {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ---------- Vems tur ---------- */
+.turn-banner { transition: background 0.25s, color 0.25s; }
+.turn-banner.turn-white { background: #fff; color: var(--ink); }
+.turn-banner.turn-black { background: #3d3a7a; color: #fff; }
+.banner-icon { width: 44px; height: 44px; flex: none; }
+.banner-icon .piece { width: 100%; height: 100%; }
+.check-tag {
+  background: var(--coral); color: #fff; border-radius: 999px; padding: 2px 12px;
+  margin-left: 6px; animation: pulse 0.8s ease-in-out infinite alternate;
+}
+.turn-banner.thinking .banner-icon { animation: think 0.8s ease-in-out infinite alternate; }
+@keyframes pulse { to { transform: scale(1.08); } }
+@keyframes think { to { transform: rotate(-12deg) translateY(-3px); } }
+
+/* ---------- Popup-innehåll ---------- */
+.popup-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.popup-emoji { font-size: 64px; line-height: 1; }
+.popup-sub { margin: 0; font-size: 20px; color: var(--ink-soft); font-weight: 700; }
+.popup-piece { width: 110px; height: 110px; margin: 0 auto; }
+.popup-piece .piece { width: 100%; height: 100%; }
+.promo-btn { width: 100px; height: 100px; padding: 6px; }
+.promo-btn .piece { width: 100%; height: 100%; }
+
+/* ---------- Inställningar ---------- */
+.settings-list { display: flex; flex-direction: column; gap: 16px; }
+.setting {
+  display: flex; align-items: center; gap: 16px; width: 100%;
+  font: inherit; color: var(--ink); text-align: left; border: 0; cursor: pointer;
+}
+.setting-icon { font-size: 40px; line-height: 1; flex: none; }
+.setting-text { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.setting-text strong { font-size: 22px; }
+.setting-text small { font-size: 16px; color: var(--ink-soft); font-weight: 600; }
+
+.switch {
+  flex: none; width: 72px; height: 42px; border-radius: 999px; background: #d9cfc2;
+  position: relative; transition: background 0.2s;
+}
+.switch span {
+  position: absolute; top: 4px; left: 4px; width: 34px; height: 34px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: transform 0.2s;
+}
+.switch.on { background: var(--green); }
+.switch.on span { transform: translateX(30px); }
+
+.style-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.style-choice {
+  font: inherit; font-size: 20px; font-weight: 800; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 14px; border-radius: var(--radius); cursor: pointer;
+  background: var(--sq-light); border: 5px solid transparent;
+}
+.style-choice.chosen { border-color: var(--green); background: #e6f7ee; }
+.style-pieces { display: flex; }
+.style-pieces .piece { width: 64px; height: 64px; }
+.about { text-align: center; color: var(--ink-soft); font-weight: 700; margin: 8px 0 0; }

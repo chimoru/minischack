@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#ffd34d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MiniSchack">
+  <title>MiniSchack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main id="app">
+
+    <!-- Första start: välj namn -->
+    <section class="screen" id="screen-name" hidden>
+      <div class="card center">
+        <div class="mascot" aria-hidden="true">♞</div>
+        <h1>Hej! Vad heter du?</h1>
+        <form id="name-form" autocomplete="off">
+          <input id="name-input" class="big-input" type="text" maxlength="16"
+                 placeholder="Skriv ditt namn" aria-label="Ditt namn">
+          <button class="btn btn-green" type="submit">Klar ✔</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Huvudmeny -->
+    <section class="screen" id="screen-menu" hidden>
+      <header class="menu-header">
+        <h1 class="logo">Mini<span>Schack</span></h1>
+        <button class="profile-chip" id="profile-chip" type="button">
+          <span aria-hidden="true">🙂</span> <span id="profile-name"></span>
+        </button>
+      </header>
+
+      <div class="trophy card" id="trophy"></div>
+
+      <nav class="menu-grid">
+        <button class="btn btn-big btn-blue" data-go="friend">
+          <span class="btn-icon" aria-hidden="true">👫</span>Mot en kompis
+        </button>
+        <button class="btn btn-big btn-coral" data-go="levels">
+          <span class="btn-icon" aria-hidden="true">🤖</span>Mot datorn
+        </button>
+        <button class="btn btn-big btn-green" data-go="learn" id="learn-button">
+          <span class="btn-icon" aria-hidden="true">🎓</span>Lär dig pjäserna
+        </button>
+        <button class="btn btn-big btn-purple" data-go="settings">
+          <span class="btn-icon" aria-hidden="true">⚙️</span>Inställningar
+        </button>
+      </nav>
+    </section>
+
+    <!-- Välj nivå mot datorn -->
+    <section class="screen" id="screen-levels" hidden>
+      <header class="top-bar">
+        <button class="btn btn-round" data-go="menu" aria-label="Tillbaka">←</button>
+        <h2>Vem vill du spela mot?</h2>
+      </header>
+      <div class="level-grid" id="level-grid"></div>
+    </section>
+
+    <!-- Spelet -->
+    <section class="screen" id="screen-game" hidden>
+      <header class="top-bar">
+        <button class="btn btn-round" id="game-back" aria-label="Till menyn">🏠</button>
+        <div class="turn-banner" id="turn-banner"></div>
+      </header>
+      <div class="board-wrap">
+        <div class="board" id="board"></div>
+      </div>
+    </section>
+
+    <!-- Lär dig pjäserna -->
+    <section class="screen" id="screen-learn" hidden>
+      <header class="top-bar">
+        <button class="btn btn-round" data-go="menu" aria-label="Tillbaka">←</button>
+        <h2>Lär dig pjäserna</h2>
+      </header>
+      <div id="learn-content"></div>
+    </section>
+
+    <!-- Inställningar -->
+    <section class="screen" id="screen-settings" hidden>
+      <header class="top-bar">
+        <button class="btn btn-round" data-go="menu" aria-label="Tillbaka">←</button>
+        <h2>Inställningar</h2>
+      </header>
+      <div id="settings-content"></div>
+    </section>
+
+  </main>
+
+  <!-- Popup (bondeförvandling, slutet på partiet m.m.) -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="card popup" id="popup"></div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
