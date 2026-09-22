@@ -12,8 +12,9 @@ Specen ligger i `~/Downloads/minischack-spec.md`. All text i appen är på svens
 ## Regler vid ändringar
 - **Ny fil?** Lägg till den i `FILES` i `sw.js`, annars fungerar appen inte offline.
   `node tests/files.test.mjs` fångar det.
-- **Inför varje publicering:** öka `VERSION` i `sw.js` (v1 → v2 …). Annars får
-  installerade appar aldrig de nya filerna.
+- `VERSION` i `sw.js` stämplas automatiskt med commit-id vid publicering
+  (`.github/workflows/deploy.yml`) – behöver inte ändras för hand.
+- Publiceras till https://chimoru.dev/minischack/ (repo `chimoru/minischack`) vid push till main.
 - Pedagogiken: vid ogiltiga drag visas **ingen förklarande text** – bara skakning + ljud.
 - Brädet vänds aldrig.
 

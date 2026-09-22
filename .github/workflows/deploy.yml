@@ -1,0 +1,62 @@
+# Publicerar MiniSchack till GitHub Pages (https://chimoru.dev/minischack/).
+#
+# Körs vid varje push till main, eller för hand från fliken Actions.
+# Testerna körs först – går något fel publiceras ingenting.
+
+name: Publicera MiniSchack
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicera:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Testa schackreglerna
+        run: node tests/rules.test.mjs
+
+      - name: Kontrollera att alla filer sparas för offline
+        run: node tests/files.test.mjs
+
+      # Bara appens egna filer ska ut – inte tester, verktyg och anteckningar.
+      - name: Samla appens filer
+        run: |
+          mkdir _site
+          cp -r index.html manifest.webmanifest sw.js css js icons _site/
+
+      # Service workern hämtar nya filer bara när sw.js ändras. Genom att stämpla
+      # versionen med commitens id blir varje publicering en ny version automatiskt,
+      # så installerade appar på iPhone/iPad alltid får uppdateringen.
+      - name: Versionsmärk service workern
+        run: |
+          V=$(git rev-parse --short HEAD)
+          perl -pi -e "s|const VERSION = '[^']*';|const VERSION = '$V';|" _site/sw.js
+          grep -q "const VERSION = '$V';" _site/sw.js
+          echo "Version: $V"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4

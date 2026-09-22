@@ -1,7 +1,7 @@
 // Service worker: sparar alla appens filer på enheten, så MiniSchack fungerar utan internet.
 //
-// VIKTIGT vid varje ändring som publiceras: öka VERSION nedan. Då hämtar iPhonen/iPaden
-// alla filer på nytt, på en gång, i stället för att blanda gamla och nya filer.
+// VERSION byts automatiskt mot commitens id när appen publiceras (se deploy.yml).
+// När den ändras hämtar iPhonen/iPaden alla filer på nytt, på en gång.
 const VERSION = 'v1';
 const CACHE = `minischack-${VERSION}`;
 
