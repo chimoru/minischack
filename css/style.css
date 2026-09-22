@@ -124,8 +124,26 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 .trophy { display: flex; align-items: center; gap: 16px; }
 .trophy-cup { font-size: 64px; line-height: 1; }
 .trophy-text { font-size: 22px; font-weight: 800; }
-.trophy-badges { font-size: 30px; margin-top: 4px; }
-.trophy-badges .locked { filter: grayscale(1); opacity: 0.3; }
+.trophy-badges { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.badge {
+  display: flex; flex-direction: column; align-items: center;
+  background: #fff3cf; border-radius: 14px; padding: 6px 4px; min-width: 44px;
+}
+.badge-emoji { font-size: 28px; line-height: 1; }
+.badge-count { font-size: 15px; font-weight: 800; min-height: 18px; }
+.badge.locked { background: #f1ece4; }
+.badge.locked .badge-emoji { filter: grayscale(1); opacity: 0.3; }
+.badge.new { animation: hop 0.6s ease-out 3; background: #ffe07a; }
+.trophy-cup.cheer { animation: hop 0.6s ease-out 3; }
+@keyframes hop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-14px) scale(1.15) rotate(-6deg); }
+}
+.level-wins {
+  position: absolute; top: 10px; right: 12px; font-size: 16px;
+  background: rgba(255, 255, 255, 0.9); color: var(--ink); border-radius: 999px; padding: 2px 10px;
+}
+.level-grid .btn-big { position: relative; }
 
 /* ---------- Toppfält ---------- */
 .top-bar { display: flex; align-items: center; gap: 14px; }
@@ -160,6 +178,9 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 
 @media (max-width: 420px) {
   .btn-big { min-height: 110px; }
+  .trophy { gap: 10px; padding: 16px; }
+  .trophy-cup { font-size: 48px; }
+  .trophy-text { font-size: 20px; }
   .btn-icon { font-size: 40px; }
 }
 

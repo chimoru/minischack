@@ -19,6 +19,7 @@ export function show(name) {
   }
   if (name === 'menu') renderMenu();
   if (name === 'settings') renderSettings();
+  if (name === 'levels') renderLevels();
   window.scrollTo(0, 0);
 }
 
@@ -42,20 +43,30 @@ document.getElementById('profile-chip').addEventListener('click', () => {
 });
 
 // ---------- Meny ----------
+// Hur många vinster som visades förra gången – så nya vinster kan firas med ett skutt
+let shownWins = null;
+
 function renderMenu() {
   document.getElementById('profile-name').textContent = store.name;
   document.getElementById('learn-button').hidden = !store.settings.teaching;
 
   const total = store.totalWins;
   const text = total === 0
-    ? 'Vinn mot datorn och samla märken!'
+    ? 'Vinn mot datorn och samla djurmärken!'
     : `Du har vunnit ${total} ${total === 1 ? 'gång' : 'gånger'}!`;
-  const badges = LEVELS.map((l) =>
-    `<span class="${store.wins[l.id] ? '' : 'locked'}" title="${l.name}">${l.emoji}</span>`
-  ).join(' ');
+  const badges = LEVELS.map((l) => {
+    const n = store.wins[l.id];
+    const isNew = shownWins && n > shownWins[l.id];
+    return `<span class="badge ${n ? '' : 'locked'} ${isNew ? 'new' : ''}">
+        <span class="badge-emoji">${l.emoji}</span>
+        <span class="badge-count">${n ? `×${n}` : ''}</span>
+      </span>`;
+  }).join('');
+  const cheer = shownWins && total > Object.values(shownWins).reduce((a, b) => a + b, 0);
+  shownWins = { ...store.wins };
 
   document.getElementById('trophy').innerHTML = `
-    <div class="trophy-cup" aria-hidden="true">🏆</div>
+    <div class="trophy-cup ${cheer ? 'cheer' : ''}" aria-hidden="true">${total ? '🏆' : '⭐'}</div>
     <div>
       <div class="trophy-text">${text}</div>
       <div class="trophy-badges">${badges}</div>
@@ -67,6 +78,7 @@ function renderLevels() {
     <button class="btn btn-big ${l.color}" data-level="${l.id}">
       <span class="btn-icon" aria-hidden="true">${l.emoji}</span>${l.name}
       <small>${l.hint}</small>
+      ${store.wins[l.id] ? `<span class="level-wins">🏆 ${store.wins[l.id]}</span>` : ''}
     </button>`).join('');
 }
 
@@ -92,5 +104,4 @@ document.getElementById('game-back').addEventListener('click', confirmExit);
 
 // ---------- Start ----------
 setComputerPlayer(computerMove);
-renderLevels();
 show(store.name ? 'menu' : 'name');
