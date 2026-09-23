@@ -74,6 +74,7 @@
       <div class="board-wrap">
         <div class="board" id="board"></div>
       </div>
+      <div class="result-bar card" id="result-bar" hidden></div>
     </section>
 
     <!-- Lär dig pjäserna -->
@@ -96,7 +97,13 @@
 
   </main>
 
-  <!-- Popup (bondeförvandling, slutet på partiet m.m.) -->
+  <!-- Visas när en mobil ligger ner: appen är gjord för att hållas upprätt -->
+  <div class="rotate-hint" aria-live="polite">
+    <div class="rotate-phone" aria-hidden="true">📱</div>
+    <p>Vänd telefonen</p>
+  </div>
+
+  <!-- Popup (bondeförvandling, "Vill du sluta spela?") -->
   <div class="overlay" id="overlay" hidden>
     <div class="card popup" id="popup"></div>
   </div>

@@ -4,6 +4,7 @@ import { startGame, confirmExit, setComputerPlayer } from './ui/game.js';
 import { computerMove } from './ui/computer.js';
 import { renderSettings } from './ui/settings.js';
 import { initLearn, showPicker } from './ui/learn.js';
+import './ui/haptics.js';
 
 export const LEVELS = [
   { id: 'chick', emoji: '🐣', name: 'Kyckling', hint: 'Jättelätt', color: 'btn-yellow' },

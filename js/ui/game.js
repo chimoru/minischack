@@ -9,6 +9,7 @@ import { sfx } from './sound.js';
 import { store } from '../storage.js';
 
 const banner = document.getElementById('turn-banner');
+const resultBar = document.getElementById('result-bar');
 const escape = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 let board;          // BoardView
@@ -32,6 +33,7 @@ export function startGame(options) {
   board ??= new BoardView(document.getElementById('board'), onSquare);
   game = newGame(opts.fen);
   selected = -1; lastMove = null; arrived = -1; busy = false; paused = false;
+  resultBar.hidden = true;
   status = gameStatus(game);
   update();
 }
@@ -115,7 +117,7 @@ async function doMove(m, slideMs = 0) {
   update();
   arrived = -1;
 
-  if (status.over) { setTimeout(showResult, 900); return; }
+  if (status.over) { setTimeout(showResult, 600); return; }
   if (opts.mode === 'computer' && game.turn !== humanColor()) askComputer();
 }
 
@@ -156,51 +158,74 @@ function renderBanner() {
   } else {
     text = white ? 'Vit spelar' : 'Svart spelar';
   }
+  if (lastMove?.flag === 'castleK' || lastMove?.flag === 'castleQ') text += ' <span class="move-tag">Rockad! 🏰</span>';
+  if (lastMove?.flag === 'ep') text += ' <span class="move-tag">En passant!</span>';
   if (status.check && !status.over) text += ' <span class="check-tag">Schack!</span>';
   banner.className = `turn-banner ${white ? 'turn-white' : 'turn-black'}${busy && !white ? ' thinking' : ''}`;
   banner.innerHTML = `<span class="banner-icon">${icon}</span><span>${text}</span>`;
 }
 
 // ---------- Slutet på partiet ----------
+// Resultatet visas UNDER brädet (inte i en popup framför), så man ser hur partiet slutade.
 
-async function showResult() {
-  let html;
+
+// Varför det blev oavgjort – med ord som ett barn förstår
+const DRAW_REASON = {
+  stalemate: 'Patt! Den som skulle spela kunde inte flytta någon pjäs – men stod inte i schack.',
+  fifty: 'Ingen har tagit en pjäs eller flyttat en bonde på 50 drag.',
+  repetition: 'Samma ställning kom tillbaka tre gånger.',
+  material: 'Det finns för få pjäser kvar för att någon ska kunna göra schackmatt.',
+};
+
+function showResult() {
+  let emoji, title, sub = '';
   if (status.result === 'checkmate') {
     const winner = status.winner;
-    const kingIcon = `<div class="popup-piece">${pieceSVG(winner === 'w' ? 'K' : 'k', style())}</div>`;
     if (opts.mode === 'computer') {
       if (winner === 'w') {
         store.addWin(opts.level.id);
         sfx('win');
-        html = `<div class="popup-emoji">🎉🏆🎉</div><h2>Schackmatt! Du vann!</h2>
-          <p class="popup-sub">Du har vunnit ${store.totalWins} ${store.totalWins === 1 ? 'gång' : 'gånger'}!</p>`;
+        emoji = '🎉🏆🎉';
+        title = 'Schackmatt! Du vann!';
+        sub = `Du har vunnit ${store.totalWins} ${store.totalWins === 1 ? 'gång' : 'gånger'}!`;
       } else {
         sfx('lose');
-        html = `<div class="popup-emoji">${opts.level.emoji}</div><h2>${opts.level.name} vann den här gången</h2>
-          <p class="popup-sub">Försök igen – du blir bättre för varje parti!</p>`;
+        emoji = opts.level.emoji;
+        title = `Schackmatt – ${opts.level.name} vann`;
+        sub = 'Titta på brädet och se hur det gick. Försök igen!';
       }
     } else {
       sfx('win');
-      html = `${kingIcon}<h2>Schackmatt! ${winner === 'w' ? 'Vit' : 'Svart'} vann! 🎉</h2>`;
+      emoji = '🎉';
+      title = `Schackmatt! ${winner === 'w' ? 'Vit' : 'Svart'} vann!`;
     }
   } else {
     sfx('draw');
-    const why = {
-      stalemate: 'Patt – den som ska spela kan inte flytta.',
-      fifty: '50 drag utan att någon tagit en pjäs.',
-      repetition: 'Samma ställning tre gånger.',
-      material: 'Ingen kan göra schackmatt längre.',
-    }[status.result];
-    html = `<div class="popup-emoji">🤝</div><h2>Oavgjort!</h2><p class="popup-sub">${why}</p>`;
+    emoji = '🤝';
+    title = 'Oavgjort!';
+    sub = DRAW_REASON[status.result];
   }
 
-  busy = true;
-  const choice = await popup(html, [
-    { html: '🔄 Spela igen', className: 'btn-green', value: 'again' },
-    { html: '🏠 Menyn', className: 'btn-blue', value: 'menu' },
-  ]);
-  if (choice === 'again') startGame(opts); else opts.onExit();
+  // Banderollen visar också resultatet
+  banner.className = 'turn-banner turn-over';
+  banner.innerHTML = `<span>${emoji} ${title}</span>`;
+
+  resultBar.innerHTML = `
+    ${sub ? `<p class="result-sub">${sub}</p>` : ''}
+    <div class="result-buttons">
+      <button class="btn btn-green" type="button" data-result="again">🔄 Spela igen</button>
+      <button class="btn btn-blue" type="button" data-result="menu">🏠 Menyn</button>
+    </div>`;
+  resultBar.hidden = false;
+  resultBar.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
+
+resultBar.addEventListener('click', (e) => {
+  const choice = e.target.closest('[data-result]')?.dataset.result;
+  if (!choice) return;
+  resultBar.hidden = true;
+  if (choice === 'again') startGame(opts); else opts.onExit();
+});
 
 export async function confirmExit() {
   if (status.over || !lastMove) { opts.onExit(); return; }

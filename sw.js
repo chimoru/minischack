@@ -18,6 +18,7 @@ const FILES = [
   'js/ui/board.js',
   'js/ui/computer.js',
   'js/ui/game.js',
+  'js/ui/haptics.js',
   'js/ui/learn.js',
   'js/ui/pieces.js',
   'js/ui/popup.js',

@@ -2,7 +2,9 @@
 // så de fungerar offline och kräver inga licenser.
 //
 // iPhone/iPad tillåter bara ljud efter att användaren har rört skärmen, så ljudet
-// "låses upp" vid första tryck.
+// "låses upp" vid tryck. Safari godkänner bara vissa händelser för det (t.ex. när
+// fingret släpps), så vi försöker vid flera. Efter att appen legat i bakgrunden hamnar
+// ljudet i läget "interrupted" på iOS – då väcker vi det igen vid nästa tryck.
 import { store } from '../storage.js';
 
 let ctx = null;
@@ -10,10 +12,23 @@ let ctx = null;
 function unlock() {
   try {
     ctx ??= new (window.AudioContext || window.webkitAudioContext)();
-    if (ctx.state === 'suspended') ctx.resume();
+    if (ctx.state !== 'running') {
+      ctx.resume().catch(() => {});
+      // Ett kort tyst ljud "startar" ljudet på äldre iPad/iPhone
+      const silent = ctx.createBufferSource();
+      silent.buffer = ctx.createBuffer(1, 1, 22050);
+      silent.connect(ctx.destination);
+      silent.start(0);
+    }
   } catch { ctx = null; }
 }
-window.addEventListener('pointerdown', unlock, { capture: true });
+for (const type of ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown']) {
+  window.addEventListener(type, unlock, { capture: true, passive: true });
+}
+// Kommer appen tillbaka från bakgrunden: försök väcka ljudet direkt
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && ctx && ctx.state !== 'running') ctx.resume().catch(() => {});
+});
 
 // En ton: frekvens (Hz), start (s efter nu), längd (s), vågform, volym
 function tone(freq, start, length, type = 'sine', volume = 0.25, slideTo = null) {
