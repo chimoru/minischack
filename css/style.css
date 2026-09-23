@@ -43,14 +43,15 @@ html, body {
 }
 
 #app {
-  min-height: 100%;
+  display: flex; flex-direction: column;
+  min-height: 100vh; min-height: 100dvh;   /* hela skärmhöjden, så brädet kan centreras */
   padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
            max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   max-width: 900px;
   margin: 0 auto;
 }
 
-.screen { display: flex; flex-direction: column; gap: 18px; min-height: 100%; }
+.screen { display: flex; flex-direction: column; gap: 18px; flex: 1; }
 .screen[hidden] { display: none; }
 
 h1, h2 { margin: 0; line-height: 1.15; }
@@ -156,10 +157,13 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 .turn-banner {
   flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
   font-size: clamp(20px, 4.5vw, 28px); font-weight: 800;
-  padding: 10px 16px; border-radius: 999px; background: #fff; box-shadow: var(--shadow);
-  min-height: 56px;
+  padding: 6px 16px; border-radius: 999px; background: #fff; box-shadow: var(--shadow);
+  height: 64px; line-height: 1.1; text-align: center;   /* fast höjd: brädet flyttar sig aldrig */
 }
 .board-wrap { display: flex; justify-content: center; }
+/* Brädet står i mitten av utrymmet under banderollen */
+#screen-game .board-wrap, #learn-content .board-wrap { flex: 1; align-items: center; }
+.board-holder { position: relative; }
 .board {
   --size: min(calc(100vw - 32px), calc(100vh - 140px), 760px);
   width: var(--size); height: var(--size);
@@ -334,11 +338,29 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 }
 
 /* ---------- Resultat under brädet ---------- */
-.turn-banner.turn-over { background: var(--yellow); color: var(--ink); }
-.result-bar { display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; }
+.turn-banner.turn-over { background: var(--yellow); color: var(--ink); font-size: clamp(17px, 4.4vw, 28px); }
+.result-bar {
+  display: flex; flex-direction: column; gap: 10px; align-items: stretch; text-align: center;
+  padding: 12px 14px;
+}
 .result-bar[hidden] { display: none; }
-.result-sub { margin: 0; font-size: 19px; font-weight: 700; color: var(--ink-soft); }
-.result-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+/* Resultatet läggs i tomrummet runt brädet, så brädet står kvar på samma ställe när
+   partiet tar slut: under brädet på upprätt skärm, bredvid brädet på liggande iPad
+   (där fyller brädet hela höjden). */
+@media (orientation: portrait) {
+  .board-holder .result-bar { position: absolute; left: 0; right: 0; top: calc(100% + 12px); }
+}
+@media (orientation: landscape) {
+  .board-holder .result-bar {
+    position: absolute; top: 50%; left: calc(100% + 16px); transform: translateY(-50%);
+    width: min(240px, calc(50vw - 50% - 32px));
+  }
+  .board-holder .result-buttons { flex-direction: column; }
+}
+#screen-learn #learn-content { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.result-sub { margin: 0; font-size: clamp(15px, 4vw, 19px); font-weight: 700; color: var(--ink-soft); line-height: 1.25; }
+.result-buttons { display: flex; gap: 10px; }
+.result-buttons .btn { flex: 1; padding: 12px 8px; font-size: clamp(17px, 4.6vw, 20px); white-space: nowrap; }
 .move-tag {
   background: var(--purple); color: #fff; border-radius: 999px; padding: 2px 12px;
   margin-left: 6px; font-size: 0.8em;

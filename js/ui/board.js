@@ -78,7 +78,8 @@ export class BoardView {
   // slides: [{ from, to, piece }] – flera samtidigt, t.ex. kung + torn vid rockad.
   // Brädet visar fortfarande ställningen FÖRE draget medan pjäserna glider.
   async slide(slides, ms, style) {
-    if (!ms || !Element.prototype.animate) return;
+    // Syns inte appen (t.ex. bytt app) pausar webbläsaren animationer – hoppa över dem då
+    if (!ms || !Element.prototype.animate || document.hidden) return;
     const ghosts = slides.map(({ from, to, piece }) => {
       const a = this.squares[from].getBoundingClientRect();
       const b = this.squares[to].getBoundingClientRect();
@@ -99,7 +100,12 @@ export class BoardView {
       ], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
       return { ghost, anim, orig };
     });
-    await Promise.all(ghosts.map((g) => g.anim.finished.catch(() => {})));
+    // Vänta tills pjäserna landat – men aldrig längre än en kort stund extra, så partiet
+    // inte kan fastna om animationen skulle pausas
+    await Promise.race([
+      Promise.all(ghosts.map((g) => g.anim.finished.catch(() => {}))),
+      new Promise((r) => setTimeout(r, ms + 300)),
+    ]);
     // Spökena tas bort först när brädet ritats om (i nästa bildruta), så inget blinkar
     requestAnimationFrame(() => ghosts.forEach((g) => {
       g.ghost.remove();
