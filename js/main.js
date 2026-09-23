@@ -123,6 +123,19 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// ---------- Vänd telefonen ----------
+// När en mobil vänds upprätt igen: börja alltid från toppen av sidan. Annars kan
+// iPhone stå kvar nedscrollad så att översta raden hamnar bakom klockan.
+// (Samma villkor som för "Vänd telefonen"-bilden i style.css.)
+const lyingPhone = matchMedia('(orientation: landscape) and (max-height: 500px)');
+lyingPhone.addEventListener('change', (e) => {
+  if (e.matches) return;
+  window.scrollTo(0, 0);
+  // iOS gör klart vridningen i flera steg – upprepa när layouten har satt sig
+  requestAnimationFrame(() => window.scrollTo(0, 0));
+  setTimeout(() => window.scrollTo(0, 0), 350);
+});
+
 // ---------- Start ----------
 setComputerPlayer(computerMove);
 initLearn(() => show('menu'));
