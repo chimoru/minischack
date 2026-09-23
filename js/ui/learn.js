@@ -45,8 +45,11 @@ export function showPicker() {
   current = null;
   board = null;
   title.textContent = 'Lär dig pjäserna';
+  const known = PIECES.filter((p) => store.learned.includes(p.type)).length;
   content.innerHTML = `
+    <div class="learn-picker">
     <p class="learn-intro">Tryck på en pjäs!</p>
+    ${known ? `<p class="learn-progress">Du kan ${known} av ${PIECES.length} pjäser ${known === PIECES.length ? '🏆' : '⭐'}</p>` : ''}
     <div class="learn-grid">
       ${PIECES.map((p) => `
         <button class="btn btn-white learn-choice" type="button" data-piece="${p.type}">
@@ -54,6 +57,7 @@ export function showPicker() {
           <span class="learn-piece">${pieceSVG(p.type.toUpperCase(), style())}</span>
           <span>${PIECE_NAMES[p.type]}</span>
         </button>`).join('')}
+    </div>
     </div>`;
 }
 
