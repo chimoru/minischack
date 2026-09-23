@@ -344,7 +344,10 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 /* Låg och bred skärm = telefon på tvären (en iPad är alltid högre än 500 px) */
 @media (orientation: landscape) and (max-height: 500px) {
   .rotate-hint { display: flex; }
-  /* Göm appen under tiden (partiet finns kvar), så sidan inte kan scrolla iväg */
-  #app, .overlay { display: none; }
+  /* Gör appen osynlig och fäst den mot skärmen under tiden. Då kan sidan inte scrolla
+     iväg, och eftersom appen inte tas bort startar inga animationer om när man vänder
+     tillbaka (display: none hade gjort det – det såg ut som att allt hoppade). */
+  #app { position: fixed; inset: 0; overflow: hidden; visibility: hidden; }
+  .overlay { visibility: hidden; }
   html, body { overflow: hidden; }
 }

@@ -135,6 +135,8 @@ export class BoardView {
       if (p && sq === opts.arrived) {
         const svg = d.querySelector('.piece');
         svg.classList.remove('pop'); void svg.offsetWidth; svg.classList.add('pop');
+        // Ta bort effekten när den spelats klart, så den aldrig spelas upp igen av sig själv
+        svg.addEventListener('animationend', () => svg.classList.remove('pop'), { once: true });
       }
     }
   }
@@ -143,5 +145,6 @@ export class BoardView {
   shake(sq) {
     const d = this.squares[sq];
     d.classList.remove('nope'); void d.offsetWidth; d.classList.add('nope');
+    d.addEventListener('animationend', () => d.classList.remove('nope'), { once: true });
   }
 }

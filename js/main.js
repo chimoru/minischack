@@ -128,12 +128,12 @@ if ('serviceWorker' in navigator) {
 // iPhone stå kvar nedscrollad så att översta raden hamnar bakom klockan.
 // (Samma villkor som för "Vänd telefonen"-bilden i style.css.)
 const lyingPhone = matchMedia('(orientation: landscape) and (max-height: 500px)');
+// Scrolla bara om sidan faktiskt hamnat fel – annars syns ett onödigt ryck.
+const backToTop = () => { if (window.scrollY !== 0) window.scrollTo(0, 0); };
 lyingPhone.addEventListener('change', (e) => {
   if (e.matches) return;
-  window.scrollTo(0, 0);
-  // iOS gör klart vridningen i flera steg – upprepa när layouten har satt sig
-  requestAnimationFrame(() => window.scrollTo(0, 0));
-  setTimeout(() => window.scrollTo(0, 0), 350);
+  backToTop();
+  setTimeout(backToTop, 400);   // iOS gör klart vridningen efter en liten stund
 });
 
 // ---------- Start ----------
