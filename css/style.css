@@ -389,3 +389,19 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
   .overlay { visibility: hidden; }
   html, body { overflow: hidden; }
 }
+
+/* ---------- Mot en kompis: spelarna sitter mitt emot varandra ---------- */
+#turn-banner-top { display: none; }
+.friend-mode #turn-banner-top { display: flex; flex: none; transform: rotate(180deg); order: 1; }
+.friend-mode .board-wrap { order: 2; }
+.friend-mode .top-bar { order: 3; }             /* 🏠 och vits banderoll längst ner */
+.turn-banner.waiting { opacity: 0.45; }
+.turn-banner.turn-lost { background: #fff; color: var(--ink-soft); }
+/* Två banderoller tar mer plats – brädet krymper lite om skärmen är låg, så
+   resultatrutan får plats mellan brädet och vits banderoll */
+@media (orientation: portrait) {
+  .friend-mode .board { --size: min(calc(100vw - 32px), calc(100vh - 390px), 760px); }
+}
+@media (orientation: landscape) {
+  .friend-mode .board { --size: min(calc(100vw - 32px), calc(100vh - 230px), 760px); }
+}

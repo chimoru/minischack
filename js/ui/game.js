@@ -8,7 +8,9 @@ import { popup } from './popup.js';
 import { sfx } from './sound.js';
 import { store } from '../storage.js';
 
-const banner = document.getElementById('turn-banner');
+const banner = document.getElementById('turn-banner');           // vit / den som spelar mot datorn
+const bannerTop = document.getElementById('turn-banner-top');    // svart i kompisläget (upp och ner)
+const screenEl = document.getElementById('screen-game');
 const resultBar = document.getElementById('result-bar');
 const escape = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -34,6 +36,8 @@ export function startGame(options) {
   game = newGame(opts.fen);
   selected = -1; lastMove = null; arrived = -1; busy = false; paused = false;
   resultBar.hidden = true;
+  // Mot en kompis sitter man mitt emot varandra: en banderoll vänd mot vardera spelaren
+  screenEl.classList.toggle('friend-mode', opts.mode === 'friend');
   status = gameStatus(game);
   update();
 }
@@ -149,7 +153,35 @@ function update() {
   renderBanner();
 }
 
+// Etikett för specialdrag, så man förstår vad som hände
+function moveTag(m) {
+  if (m?.flag === 'castleK' || m?.flag === 'castleQ') return '<span class="move-tag">Rockad! 🏰</span>';
+  if (m?.flag === 'ep') return '<span class="move-tag">En passant!</span>';
+  return '';
+}
+
+// Kompisläget: varje spelare har sin egen banderoll. Den som är på tur lyser,
+// den andra är nedtonad. Schack visas hos den som står i schack, och ett specialdrag
+// (rockad, en passant) visas hos den som just gjorde det.
+function renderFriendBanners() {
+  for (const color of ['w', 'b']) {
+    const el = color === 'w' ? banner : bannerTop;
+    const active = game.turn === color;
+    const justMoved = lastMove && colorOf(lastMove.piece) === color;
+    let text;
+    if (active) {
+      text = 'Din tur!';
+      if (status.check) text += ' <span class="check-tag">Schack!</span>';
+    } else {
+      text = (justMoved && moveTag(lastMove)) || 'Vänta…';
+    }
+    el.className = `turn-banner ${color === 'w' ? 'turn-white' : 'turn-black'}${active ? '' : ' waiting'}`;
+    el.innerHTML = `<span class="banner-icon">${pieceSVG(color === 'w' ? 'K' : 'k', style())}</span><span>${text}</span>`;
+  }
+}
+
 function renderBanner() {
+  if (opts.mode === 'friend') { renderFriendBanners(); return; }
   const white = game.turn === 'w';
   const icon = pieceSVG(white ? 'K' : 'k', style());
   let text;
@@ -158,8 +190,8 @@ function renderBanner() {
   } else {
     text = white ? 'Vit spelar' : 'Svart spelar';
   }
-  if (lastMove?.flag === 'castleK' || lastMove?.flag === 'castleQ') text += ' <span class="move-tag">Rockad! 🏰</span>';
-  if (lastMove?.flag === 'ep') text += ' <span class="move-tag">En passant!</span>';
+  const tag = moveTag(lastMove);
+  if (tag) text += ` ${tag}`;
   if (status.check && !status.over) text += ' <span class="check-tag">Schack!</span>';
   banner.className = `turn-banner ${white ? 'turn-white' : 'turn-black'}${busy && !white ? ' thinking' : ''}`;
   banner.innerHTML = `<span class="banner-icon">${icon}</span><span>${text}</span>`;
@@ -198,6 +230,7 @@ function showResult() {
       sfx('win');
       emoji = '🎉';
       title = `Schackmatt! ${winner === 'w' ? 'Vit' : 'Svart'} vann!`;
+      sub = '';
     }
   } else {
     sfx('draw');
@@ -206,9 +239,19 @@ function showResult() {
     sub = DRAW_REASON[status.result];
   }
 
-  // Banderollen visar också resultatet
-  banner.className = 'turn-banner turn-over';
-  banner.innerHTML = `<span>${emoji} ${title}</span>`;
+  // Banderollen visar också resultatet – i kompisläget från varje spelares håll
+  if (opts.mode === 'friend') {
+    for (const color of ['w', 'b']) {
+      const el = color === 'w' ? banner : bannerTop;
+      const won = status.winner === color;
+      const text = !status.winner ? '🤝 Oavgjort!' : won ? '🎉 Du vann!' : 'Schackmatt! Bra kämpat 💪';
+      el.className = `turn-banner ${won || !status.winner ? 'turn-over' : 'turn-lost'}`;
+      el.innerHTML = `<span>${text}</span>`;
+    }
+  } else {
+    banner.className = 'turn-banner turn-over';
+    banner.innerHTML = `<span>${emoji} ${title}</span>`;
+  }
 
   resultBar.innerHTML = `
     ${sub ? `<p class="result-sub">${sub}</p>` : ''}
