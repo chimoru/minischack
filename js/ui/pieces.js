@@ -100,7 +100,7 @@ export function pieceSVG(piece, style = 'kids') {
   }
   if (kids && shape.face) extra += face(shape.face, c.detail);
 
-  return `<svg class="piece" viewBox="0 0 100 100" aria-hidden="true">
+  return `<svg class="piece piece-${color}" viewBox="0 0 100 100" aria-hidden="true">
     <g fill="${c.fill}" stroke="${c.stroke}" stroke-width="${pal.width}"
        stroke-linejoin="round" stroke-linecap="round">${shape.parts}</g>${extra}</svg>`;
 }

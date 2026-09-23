@@ -38,6 +38,7 @@ export function startGame(options) {
   resultBar.hidden = true;
   // Mot en kompis sitter man mitt emot varandra: en banderoll vänd mot vardera spelaren
   screenEl.classList.toggle('friend-mode', opts.mode === 'friend');
+  board.setFlipBlack(opts.mode === 'friend');
   status = gameStatus(game);
   update();
 }
@@ -77,7 +78,7 @@ async function chooseMove(moves, dropped) {
       html: pieceSVG(white ? t.toUpperCase() : t, style()),
       className: 'btn-white promo-btn',
       value: t,
-    })));
+    })), { flipped: opts.mode === 'friend' && !white });   // svart läser rutan från sitt håll
     busy = false;
     move = moves.find((m) => typeOf(m.promotion) === choice);
   }

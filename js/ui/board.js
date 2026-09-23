@@ -25,6 +25,12 @@ export class BoardView {
     el.addEventListener('pointercancel', () => this.endDrag());
   }
 
+  // Kompisläget: svarts pjäser vänds 180°, så de står rätt för den som sitter mitt emot
+  setFlipBlack(on) {
+    this.flipBlack = on;
+    this.el.classList.toggle('flip-black', on);
+  }
+
   squareAt(x, y) {
     const sq = document.elementFromPoint(x, y)?.closest('.sq');
     return sq && this.el.contains(sq) ? Number(sq.dataset.sq) : -1;
@@ -43,7 +49,7 @@ export class BoardView {
     if (!svg || !d.classList.contains('selected')) return;
     const rect = d.getBoundingClientRect();
     const ghost = document.createElement('div');
-    ghost.className = 'drag-ghost';
+    ghost.className = `drag-ghost${this.flipBlack ? ' flip-black' : ''}`;
     ghost.style.width = ghost.style.height = `${rect.width * 1.25}px`;
     ghost.innerHTML = svg.outerHTML;
     this.drag = { sq, ghost, svg, x0: e.clientX, y0: e.clientY, moved: false, id: e.pointerId };
@@ -84,7 +90,7 @@ export class BoardView {
       const a = this.squares[from].getBoundingClientRect();
       const b = this.squares[to].getBoundingClientRect();
       const ghost = document.createElement('div');
-      ghost.className = 'slide-ghost';
+      ghost.className = `slide-ghost${this.flipBlack ? ' flip-black' : ''}`;
       Object.assign(ghost.style, {
         left: `${a.left}px`, top: `${a.top}px`, width: `${a.width}px`, height: `${a.height}px`,
       });

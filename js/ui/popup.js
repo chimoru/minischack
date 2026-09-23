@@ -3,8 +3,10 @@
 const overlay = document.getElementById('overlay');
 const box = document.getElementById('popup');
 
-export function popup(html, buttons) {
+// flipped: vänd rutan upp och ner – för svart spelare som sitter mitt emot i kompisläget
+export function popup(html, buttons, { flipped = false } = {}) {
   return new Promise((resolve) => {
+    box.classList.toggle('flipped', flipped);
     box.innerHTML = `${html}<div class="popup-buttons"></div>`;
     const row = box.querySelector('.popup-buttons');
     for (const b of buttons) {
