@@ -1,7 +1,11 @@
 // Låter datornivåerna spela mot varandra. Kör med:  node tests/ai.test.mjs [antal partier]
-// Starkare nivåer ska vinna klart mot svagare, och alla drag ska vara lagliga.
+// Starkare nivåer ska vinna mot svagare, och alla drag ska vara lagliga.
+// Första raden mäter Kyckling mot en ren slumpspelare – den ska vara lätt att slå.
 import { newGame, legalMoves, playMove, gameStatus, cloneState } from '../js/chess/rules.js';
 import { chooseMove } from '../js/chess/ai.js';
+
+// En "spelare" som bara gör slumpdrag – används för att mäta hur lätt Kyckling är
+const randomMove = (g) => { const ms = legalMoves(g); return ms[Math.floor(Math.random() * ms.length)]; };
 
 function match(white, black) {
   const g = newGame();
@@ -10,7 +14,8 @@ function match(white, black) {
     const st = gameStatus(g);
     if (st.over) return { result: st.winner ?? 'draw', slowest };
     const t = Date.now();
-    const m = chooseMove(cloneState(g), g.turn === 'w' ? white : black);
+    const who = g.turn === 'w' ? white : black;
+    const m = who === 'random' ? randomMove(g) : chooseMove(cloneState(g), who);
     slowest = Math.max(slowest, Date.now() - t);
     if (!legalMoves(g).some((x) => x.from === m.from && x.to === m.to)) throw new Error('olagligt drag');
     playMove(g, m);
@@ -18,7 +23,7 @@ function match(white, black) {
   return { result: 'draw', slowest };
 }
 
-const pairs = [['bunny', 'chick'], ['fox', 'bunny'], ['owl', 'fox']];
+const pairs = [['chick', 'random'], ['bunny', 'chick'], ['fox', 'bunny'], ['owl', 'fox']];
 const GAMES = Number(process.argv[2] ?? 4);
 let failed = 0;
 for (const [strong, weak] of pairs) {

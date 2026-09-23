@@ -4,16 +4,21 @@
 // drag framåt (sökdjup), och ger varje slutställning poäng (material + hur bra pjäserna
 // står). Alfa-beta-tricket hoppar över varianter som ändå inte kan bli bättre.
 //
-// På de lätta nivåerna tänker datorn kortare och väljer ibland medvetet ett sämre
-// drag – men aldrig ett helt galet – så att barnet får chansen att vinna.
+// På de lätta nivåerna tänker datorn kortare, gör ibland slumpdrag och väljer ibland
+// medvetet ett sämre drag, så att barnet får chansen att vinna.
 
 import { legalMoves, makeMove, unmakeMove, inCheck, typeOf, isWhite } from './rules.js';
 
+// depth     – hur många drag framåt datorn tänker
+// quiesce   – tittar vidare på slag efter sökdjupet (annars missar den återtagningar)
+// random    – andel helt slumpade drag (som ett barn som precis lärt sig pjäserna)
+// takeMate  – chans att den ser en matt den kan göra (1 = alltid)
+// mistake   – chans att medvetet välja ett sämre drag, högst `margin` poäng sämre
 export const LEVEL_SETTINGS = {
-  chick: { depth: 1, quiesce: false, mistake: 0.45, margin: 450 },
-  bunny: { depth: 2, quiesce: true, mistake: 0.22, margin: 160 },
-  fox: { depth: 3, quiesce: true, mistake: 0.06, margin: 60 },
-  owl: { depth: 5, quiesce: true, mistake: 0, margin: 0, timeMs: 1800 },
+  chick: { depth: 1, quiesce: false, random: 0.5, takeMate: 0.3, mistake: 0.5, margin: 600 },
+  bunny: { depth: 1, quiesce: false, random: 0.1, takeMate: 0.7, mistake: 0.45, margin: 450 },
+  fox: { depth: 2, quiesce: true, takeMate: 1, mistake: 0.22, margin: 160 },
+  owl: { depth: 4, quiesce: true, takeMate: 1, mistake: 0, margin: 0, timeMs: 1500 },
 };
 
 const VALUE = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
@@ -187,7 +192,11 @@ class Search {
 export function chooseMove(state, levelId, random = Math.random) {
   const settings = LEVEL_SETTINGS[levelId] ?? LEVEL_SETTINGS.bunny;
   const moves = order(legalMoves(state));
+  const pick = (list) => list[Math.floor(random() * list.length)];
   if (moves.length === 1) return moves[0];
+
+  // Kyckling: spelar ibland helt på måfå – vilken pjäs som helst, vart som helst
+  if (settings.random && random() < settings.random) return pick(moves);
 
   const deadline = settings.timeMs ? Date.now() + settings.timeMs : 0;
   const search = new Search(settings, deadline);
@@ -204,16 +213,19 @@ export function chooseMove(state, levelId, random = Math.random) {
   }
   scored ??= moves.map((m) => ({ move: m, score: 0 }));
 
+  // Hittade den en matt? De lätta nivåerna "ser" den inte alltid – precis som en nybörjare
   const best = scored[0].score;
-  // Ta alltid en matt i ett, även på lätta nivåer (annars känns datorn konstig)
-  if (best > MATE - 100) return scored[0].move;
+  const canMate = best > MATE - 100;
+  if (canMate && random() < (settings.takeMate ?? 1)) return scored[0].move;
+  const pool = canMate ? scored.filter((x) => x.score <= MATE - 100) : scored;
+  if (!pool.length) return scored[0].move;
+  const top = pool[0].score;
 
   if (settings.mistake && random() < settings.mistake) {
-    // "Nybörjarmisstag": ett drag som är lite sämre, men inte katastrofalt
-    const ok = scored.filter((x) => x.score >= best - settings.margin && x.score > -MATE + 100);
-    if (ok.length) return ok[Math.floor(random() * ok.length)].move;   // tomt om alla drag förlorar
+    // "Nybörjarmisstag": ett sämre drag, men inte ett som leder till att den själv blir matt
+    const ok = pool.filter((x) => x.score >= top - settings.margin && x.score > -MATE + 100);
+    if (ok.length) return pick(ok).move;   // tomt om alla drag förlorar
   }
   // Bland lika bra drag: välj slumpvis, så partierna blir olika
-  const top = scored.filter((x) => x.score >= best - 5);
-  return top[Math.floor(random() * top.length)].move;
+  return pick(pool.filter((x) => x.score >= top - 5)).move;
 }
