@@ -141,10 +141,15 @@ export class BoardView {
     }
   }
 
-  // Liten skakning när man trycker fel – ingen text, bara en mjuk signal
+  // Mjuk signal när man trycker fel – ingen text.
+  //   Pjäs på rutan: bara pjäsen skakar (rutan står still, så ingen bakgrund syns).
+  //   Tom ruta: rutan blinkar svagt i stället för att skaka.
   shake(sq) {
     const d = this.squares[sq];
-    d.classList.remove('nope'); void d.offsetWidth; d.classList.add('nope');
-    d.addEventListener('animationend', () => d.classList.remove('nope'), { once: true });
+    const piece = d.querySelector('.piece');
+    const el = piece ?? d;
+    const cls = piece ? 'nope' : 'nope-flash';
+    el.classList.remove('pop', cls); void el.getBoundingClientRect(); el.classList.add(cls);
+    el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
   }
 }

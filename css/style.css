@@ -211,7 +211,12 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 .piece.pop { animation: pop 0.25s ease-out; }
 @keyframes pop { 0% { transform: scale(0.7); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-.sq.nope { animation: nope 0.3s; }
+.piece.nope { animation: nope 0.3s; }
+.sq.nope-flash { animation: nope-flash 0.35s ease-out; }
+@keyframes nope-flash {
+  0% { box-shadow: inset 0 0 0 100vmax rgba(255, 90, 90, 0.35); }
+  100% { box-shadow: inset 0 0 0 100vmax rgba(255, 90, 90, 0); }
+}
 @keyframes nope {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
