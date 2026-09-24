@@ -142,6 +142,13 @@ lyingPhone.addEventListener('change', (e) => {
   setTimeout(backToTop, 400);   // iOS gör klart vridningen efter en liten stund
 });
 
+// På Android kan en installerad webbapp låsa skärmen upprätt på riktigt. Bara på mobiler
+// (inte surfplattor), och bara där det stöds – iPhone kan inte, där visas "Vänd telefonen".
+const isPhone = Math.min(screen.width, screen.height) < 600;
+if (isPhone && screen.orientation?.lock) {
+  screen.orientation.lock('portrait').catch(() => { /* stöds inte här – bilden får räcka */ });
+}
+
 // ---------- Start ----------
 setComputerPlayer(computerMove);
 initLearn(() => show('menu'));
