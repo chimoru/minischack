@@ -253,10 +253,10 @@ function renderFriendBanners() {
 function renderBanner() {
   if (opts.mode === 'friend') { renderFriendBanners(); return; }
   const white = game.turn === 'w';
-  const icon = pieceSVG(white ? 'K' : 'k', style());
+  const kingIcon = pieceSVG(white ? 'K' : 'k', style());
   let text;
   if (opts.mode === 'computer') {
-    text = white ? `Din tur, ${escape(store.name)}!` : `${opts.level.emoji} ${opts.level.name} tänker…`;
+    text = white ? `Din tur, ${escape(store.name)}!` : `${icon(opts.level.id, 'icon-inline')} ${opts.level.name} tänker…`;
   } else {
     text = white ? 'Vit spelar' : 'Svart spelar';
   }
@@ -264,7 +264,7 @@ function renderBanner() {
   if (tag) text += ` ${tag}`;
   if (status.check && !status.over) text += ' <span class="check-tag">Schack!</span>';
   banner.className = `turn-banner ${white ? 'turn-white' : 'turn-black'}${busy && !white ? ' thinking' : ''}`;
-  banner.innerHTML = `<span class="banner-icon">${icon}</span><span>${text}</span>`;
+  banner.innerHTML = `<span class="banner-icon">${kingIcon}</span><span>${text}</span>`;
 }
 
 // ---------- Slutet på partiet ----------
@@ -280,31 +280,31 @@ const DRAW_REASON = {
 };
 
 function showResult() {
-  let emoji, title, sub = '';
+  let pic, title, sub = '';   // pic: ikonen som visas före rubriken
   if (status.result === 'checkmate') {
     const winner = status.winner;
     if (opts.mode === 'computer') {
       if (winner === 'w') {
         store.addWin(opts.level.id);
         sfx('win');
-        emoji = `${icon('celebrate', 'icon-inline')}${icon('trophy', 'icon-inline')}`;
+        pic = `${icon('celebrate', 'icon-inline')}${icon('trophy', 'icon-inline')}`;
         title = 'Schackmatt! Du vann!';
         sub = `Du har vunnit ${store.totalWins} ${store.totalWins === 1 ? 'gång' : 'gånger'}!`;
       } else {
         sfx('lose');
-        emoji = opts.level.emoji;
+        pic = icon(opts.level.id, 'icon-inline');
         title = `Schackmatt – ${opts.level.name} vann`;
         sub = 'Titta på brädet och se hur det gick. Försök igen!';
       }
     } else {
       sfx('win');
-      emoji = icon('celebrate', 'icon-inline');
+      pic = icon('celebrate', 'icon-inline');
       title = `Schackmatt! ${winner === 'w' ? 'Vit' : 'Svart'} vann!`;
       sub = '';
     }
   } else {
     sfx('draw');
-    emoji = icon('draw', 'icon-inline');
+    pic = icon('draw', 'icon-inline');
     title = 'Oavgjort!';
     sub = DRAW_REASON[status.result];
   }
@@ -322,7 +322,7 @@ function showResult() {
     }
   } else {
     banner.className = 'turn-banner turn-over';
-    banner.innerHTML = `<span>${emoji} ${title}</span>`;
+    banner.innerHTML = `<span>${pic} ${title}</span>`;
   }
 
   resultBar.innerHTML = `

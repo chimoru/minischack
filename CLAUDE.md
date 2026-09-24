@@ -8,8 +8,8 @@ Specen ligger i `~/Downloads/minischack-spec.md`. All text i appen är på svens
 - `js/chess/ai.js` – datormotorn (alfa-beta), nivåer i `LEVEL_SETTINGS`. Körs i `ai-worker.js`.
 - `js/ui/*` – bräde, parti, meny-delar, ljud (Web Audio), pjäser (SVG i kod).
 - `js/ui/icons.js` – appens egna ikoner (tecknad stil, som pjäserna). Använd `icon('namn')`
-  i JS eller `data-icon="namn"` i index.html – **inga emojis** i UI:t (undantag: djurmärkena
-  🐣🐰🦊🦉 tills egna ritats).
+  i JS eller `data-icon="namn"` i index.html – **inga emojis** i UI:t. Djuren för nivåerna
+  heter samma sak som nivåns id: `icon('chick' | 'bunny' | 'fox' | 'owl')`.
 - `js/storage.js` – allt som sparas (localStorage, nyckel `minischack.v1`).
 
 ## Regler vid ändringar

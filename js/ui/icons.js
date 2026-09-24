@@ -4,12 +4,14 @@
 //   { d | c | r, fill: 'färg' }  – en fylld form (path, cirkel [cx,cy,r] eller rektangel [x,y,w,h,rx])
 //   { line: 'M…', color }        – en linje/pil (bara streck)
 //   { dot: [cx,cy,r] }           – en liten mörk detalj, t.ex. ögon
+//   plain: true                  – fylld form utan egen kontur (smälter in i formen under)
+//   outline: true                – bara konturen av en form (ritas ovanpå)
 // Samma former kan ritas i olika stilar (se STYLES), så alla ikoner hör ihop.
 
 const C = {
   ink: '#4a3424', white: '#ffffff', cream: '#fff6df', gold: '#ffc933', coral: '#ff7a6b',
   blue: '#4fa8ff', green: '#4cc38a', purple: '#a77bf3', dark: '#3d3a7a', brown: '#9a6a44',
-  pink: '#ff9d9d', grey: '#e3e8f2',
+  pink: '#ff9d9d', grey: '#e3e8f2', orange: '#ff9447', owl: '#b08a6a', owlDark: '#7a5a42',
 };
 
 // Enkel bonde (används av flera ikoner)
@@ -152,6 +154,54 @@ export const ICONS = {
   ],
 };
 
+// ---------- Djuren (nivåerna mot datorn): icon('chick'), icon('bunny'), icon('fox'), icon('owl') ----------
+const cheeks = (y, dx = 12) => [
+  { c: [32 - dx, y, 3.2], fill: C.pink, soft: true }, { c: [32 + dx, y, 3.2], fill: C.pink, soft: true },
+];
+
+Object.assign(ICONS, {
+  // Kyckling som precis kläckts ur ägget
+  chick: [
+    { d: 'M29 14 C27 7 35 7 34 13 Z', fill: C.gold },
+    { c: [32, 29, 16], fill: C.gold },
+    { dot: [26, 27, 2.8] }, { dot: [38, 27, 2.8] },
+    { d: 'M27.5 31.5 L36.5 31.5 L32 37.5 Z', fill: C.orange },
+    ...cheeks(33, 11),
+    { d: 'M11 40 L17 34 L23 40 L29 34 L35 40 L41 34 L47 40 L53 35 C53 51 44 59 32 59 C20 59 11 51 11 40 Z', fill: C.cream },
+  ],
+  // Kanin med öronen rakt upp
+  bunny: [
+    { d: 'M22 30 C15 20 15 5 22 4 C29 3 30 18 28 30 Z', fill: C.white },
+    { d: 'M42 30 C49 20 49 5 42 4 C35 3 34 18 36 30 Z', fill: C.white },
+    { d: 'M22.5 25 C19 18 19 10 22 9 C25 9 26 18 25.5 25 Z', fill: C.pink, soft: true },
+    { d: 'M41.5 25 C45 18 45 10 42 9 C39 9 38 18 38.5 25 Z', fill: C.pink, soft: true },
+    { c: [32, 41, 18], fill: C.white },
+    { dot: [25, 39, 2.8] }, { dot: [39, 39, 2.8] },
+    { d: 'M29 44 H35 L32 47.5 Z', fill: C.pink },
+    ...cheeks(46, 11),
+  ],
+  // Räv: spetsiga öron, spetsig haka, vit nos med svart nostipp
+  fox: [
+    { d: 'M10 6 L28 18 L12 28 Z', fill: C.orange },
+    { d: 'M54 6 L36 18 L52 28 Z', fill: C.orange },
+    { d: 'M15 13 L22 18 L16 22 Z', fill: C.cream },
+    { d: 'M49 13 L42 18 L48 22 Z', fill: C.cream },
+    { d: 'M7 24 C7 18 18 16 32 16 C46 16 57 18 57 24 C57 38 45 53 32 58 C19 53 7 38 7 24 Z', fill: C.orange },
+    { d: 'M15 35 C22 40 27 42 32 42 C37 42 42 40 49 35 C46 46 40 53 32 58 C24 53 18 46 15 35 Z', fill: C.white, plain: true },
+    { d: 'M7 24 C7 18 18 16 32 16 C46 16 57 18 57 24 C57 38 45 53 32 58 C19 53 7 38 7 24 Z', outline: true },
+    { dot: [22, 30, 3] }, { dot: [42, 30, 3] },
+    { c: [32, 53, 3], fill: C.ink },
+  ],
+  // Brun uggla med örontofsar, stora ögon och ljus mage
+  owl: [
+    { d: 'M11 30 C11 20 13 12 15 5 L24 13 C29 11 35 11 40 13 L49 5 C51 12 53 20 53 30 V44 C53 54 44 60 32 60 C20 60 11 54 11 44 Z', fill: C.owl },
+    { c: [32, 48, 10], fill: C.cream },
+    { c: [22.5, 28, 8.5], fill: C.white }, { c: [41.5, 28, 8.5], fill: C.white },
+    { dot: [23.5, 28, 4] }, { dot: [40.5, 28, 4] },
+    { d: 'M28.5 35 L35.5 35 L32 41 Z', fill: C.gold },
+  ],
+});
+
 export const ICON_NAMES = {
   friend: 'Mot en kompis', computer: 'Mot datorn', learn: 'Lär dig pjäserna', settings: 'Inställningar',
   profile: 'Profil', home: 'Hem', back: 'Tillbaka', undo: 'Ångra', again: 'Spela igen / Öva mer',
@@ -185,6 +235,12 @@ export function icon(name, className = '') {
       out += `<path d="${p.line}" fill="none" stroke="${color}" stroke-width="${p.color === 'ink' ? 6 : 4.5}" stroke-linecap="round" stroke-linejoin="round"/>`;
     } else if (p.dot) {
       out += shape(p, { fill: INK });
+    } else if (p.outline) {
+      // Bara konturen (ritas ovanpå, t.ex. för att rama in ett helt huvud)
+      out += shape(p, { fill: 'none', stroke: INK, 'stroke-width': 3.5, 'stroke-linejoin': 'round' });
+    } else if (p.plain) {
+      // Färgfält utan egen kontur, som smälter in i formen under (t.ex. rävens vita päls)
+      out += shape(p, { fill: p.fill });
     } else {
       out += shape(p, p.soft ? { fill: p.fill, opacity: 0.8 } : { fill: p.fill, stroke: INK, 'stroke-width': 3.5, 'stroke-linejoin': 'round' });
     }

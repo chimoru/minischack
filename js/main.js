@@ -13,10 +13,10 @@ for (const el of document.querySelectorAll('[data-icon]')) {
 }
 
 export const LEVELS = [
-  { id: 'chick', emoji: '🐣', name: 'Kyckling', hint: 'Jättelätt', color: 'btn-yellow' },
-  { id: 'bunny', emoji: '🐰', name: 'Kanin', hint: 'Lätt', color: 'btn-green' },
-  { id: 'fox', emoji: '🦊', name: 'Räv', hint: 'Lite svår', color: 'btn-coral' },
-  { id: 'owl', emoji: '🦉', name: 'Uggla', hint: 'Svår', color: 'btn-purple' },
+  { id: 'chick', name: 'Kyckling', hint: 'Jättelätt', color: 'btn-yellow', hex: '#ffd34d' },
+  { id: 'bunny', name: 'Kanin', hint: 'Lätt', color: 'btn-green', hex: '#4cc38a' },
+  { id: 'fox', name: 'Räv', hint: 'Lite svår', color: 'btn-coral', hex: '#ff7a6b' },
+  { id: 'owl', name: 'Uggla', hint: 'Svår', color: 'btn-purple', hex: '#a77bf3' },
 ];
 
 const screens = ['name', 'menu', 'levels', 'game', 'learn', 'settings'];
@@ -72,7 +72,7 @@ function renderMenu() {
     const n = store.wins[l.id];
     const isNew = shownWins && n > shownWins[l.id];
     return `<span class="badge ${n ? '' : 'locked'} ${isNew ? 'new' : ''}">
-        <span class="badge-emoji">${l.emoji}</span>
+        <span class="badge-animal" style="--lvl: ${l.hex}">${icon(l.id)}</span>
         <span class="badge-count">${n ? `×${n}` : ''}</span>
       </span>`;
   }).join('');
@@ -90,7 +90,7 @@ function renderMenu() {
 function renderLevels() {
   document.getElementById('level-grid').innerHTML = LEVELS.map((l) => `
     <button class="btn btn-big ${l.color}" data-level="${l.id}">
-      <span class="btn-icon" aria-hidden="true">${l.emoji}</span>${l.name}
+      <span class="btn-icon" aria-hidden="true">${icon(l.id)}</span>${l.name}
       <small>${l.hint}</small>
       ${store.wins[l.id] ? `<span class="level-wins">${icon('trophy', 'icon-inline')} ${store.wins[l.id]}</span>` : ''}
     </button>`).join('');
