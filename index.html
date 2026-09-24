@@ -67,11 +67,19 @@
 
     <!-- Spelet -->
     <section class="screen" id="screen-game" hidden>
-      <!-- Bara mot en kompis: svarts banderoll, vänd mot den som sitter mitt emot -->
-      <div class="turn-banner" id="turn-banner-top" aria-live="polite"></div>
+      <!-- Bara mot en kompis: svarts rad, vänd mot den som sitter mitt emot -->
+      <div class="friend-top" id="friend-top">
+        <div class="turn-banner" id="turn-banner-top" aria-live="polite"></div>
+        <button class="btn btn-round undo-btn" id="undo-b" type="button" aria-label="Ångra ditt senaste drag" disabled>
+          <svg class="undo-ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16"/></svg><span>↩️</span>
+        </button>
+      </div>
       <header class="top-bar">
         <button class="btn btn-round" id="game-back" aria-label="Till menyn">🏠</button>
         <div class="turn-banner" id="turn-banner"></div>
+        <button class="btn btn-round undo-btn" id="undo-w" type="button" aria-label="Ångra ditt senaste drag" disabled>
+          <svg class="undo-ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16"/></svg><span>↩️</span>
+        </button>
       </header>
       <div class="board-wrap">
         <div class="board-holder">

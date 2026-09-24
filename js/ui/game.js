@@ -1,6 +1,6 @@
 // Styr ett parti: turordning, val av pjäs, drag, förvandling och slutet.
 import {
-  newGame, legalMoves, playMove, gameStatus, kingSquare, colorOf, typeOf,
+  newGame, legalMoves, playMove, gameStatus, kingSquare, colorOf, typeOf, cloneState,
 } from '../chess/rules.js';
 import { BoardView } from './board.js';
 import { pieceSVG } from './pieces.js';
@@ -12,6 +12,7 @@ const banner = document.getElementById('turn-banner');           // vit / den so
 const bannerTop = document.getElementById('turn-banner-top');    // svart i kompisläget (upp och ner)
 const screenEl = document.getElementById('screen-game');
 const resultBar = document.getElementById('result-bar');
+const undoButtons = { w: document.getElementById('undo-w'), b: document.getElementById('undo-b') };
 const escape = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 let board;          // BoardView
@@ -24,6 +25,11 @@ let busy = false;   // true medan datorn tänker, en pjäs glider eller en popup
 let paused = false; // true medan "Vill du sluta spela?" visas
 let status = { over: false };
 let token = 0;      // ökar vid nytt parti, så gamla datordrag ignoreras
+let resultTimer = null;
+
+// Ångra (bara mot en kompis): den som just flyttade kan ångra sitt drag i några sekunder
+const UNDO_MS = 4000;
+let undo = null;    // { color, before: { state, lastMove }, move, timer }
 
 // Datorns drag kopplas in i steg 4: (ställning) => Promise<drag>
 let computerMove = null;
@@ -36,6 +42,8 @@ export function startGame(options) {
   game = newGame(opts.fen);
   selected = -1; lastMove = null; arrived = -1; busy = false; paused = false;
   resultBar.hidden = true;
+  clearTimeout(resultTimer);
+  clearUndo();
   // Mot en kompis sitter man mitt emot varandra: en banderoll vänd mot vardera spelaren
   screenEl.classList.toggle('friend-mode', opts.mode === 'friend');
   board.setFlipBlack(opts.mode === 'friend');
@@ -109,8 +117,10 @@ async function doMove(m, slideMs = 0) {
     if (my !== token) return;        // partiet avslutades medan pjäsen gled
     busy = false;
   }
+  const before = { state: cloneState(game), lastMove };
   playMove(game, m);
   lastMove = m;
+  if (opts.mode === 'friend') offerUndo(colorOf(m.piece), before, m);
   arrived = slideMs ? -1 : m.to;     // "hopp"-effekten behövs bara om pjäsen inte gled dit
   status = gameStatus(game);
 
@@ -122,7 +132,11 @@ async function doMove(m, slideMs = 0) {
   update();
   arrived = -1;
 
-  if (status.over) { setTimeout(showResult, 600); return; }
+  if (status.over) {
+    const my = token;
+    resultTimer = setTimeout(() => { if (my === token && status.over) showResult(); }, 600);
+    return;
+  }
   if (opts.mode === 'computer' && game.turn !== humanColor()) askComputer();
 }
 
@@ -135,6 +149,60 @@ async function askComputer() {
   if (my !== token) return;          // partiet har avslutats under tiden
   busy = false;
   doMove(m, SLIDE_COMPUTER_MS);
+}
+
+// ---------- Ångra ----------
+
+function offerUndo(color, before, move) {
+  clearUndo();                                   // motståndarens chans att ångra är nu borta
+  undo = { color, before, move, timer: setTimeout(clearUndo, UNDO_MS) };
+  renderUndo();
+}
+
+function clearUndo() {
+  if (undo) clearTimeout(undo.timer);
+  undo = null;
+  renderUndo();
+}
+
+function renderUndo() {
+  for (const color of ['w', 'b']) {
+    const btn = undoButtons[color];
+    const active = undo?.color === color;
+    btn.disabled = !active;
+    // Starta om ringen som krymper under de 4 sekunderna
+    btn.classList.remove('counting');
+    if (active) { void btn.offsetWidth; btn.classList.add('counting'); }
+  }
+}
+
+async function undoMove(color) {
+  if (!undo || undo.color !== color || busy || paused) return;
+  const { before, move } = undo;
+  clearUndo();
+  clearTimeout(resultTimer);
+  resultBar.hidden = true;
+  board.endDrag();
+
+  // Pjäsen (och tornet vid rockad) glider tillbaka till där den kom ifrån
+  busy = true;
+  selected = -1;
+  const my = token;
+  const back = slidesFor(move).map((x) => ({ from: x.to, to: x.from, piece: x.piece === move.piece ? (move.promotion ?? move.piece) : x.piece }));
+  await board.slide(back, 250, style());
+  if (my !== token) return;
+  busy = false;
+
+  game = before.state;
+  lastMove = before.lastMove;
+  status = gameStatus(game);
+  arrived = -1;
+  sfx('undo');
+  update();
+}
+
+for (const color of ['w', 'b']) {
+  undoButtons[color].addEventListener('click', () => undoMove(color));
 }
 
 // ---------- Vems tur ----------
@@ -268,16 +336,16 @@ resultBar.addEventListener('click', (e) => {
   const choice = e.target.closest('[data-result]')?.dataset.result;
   if (!choice) return;
   resultBar.hidden = true;
-  if (choice === 'again') startGame(opts); else opts.onExit();
+  if (choice === 'again') startGame(opts); else { token++; clearUndo(); opts.onExit(); }
 });
 
 export async function confirmExit() {
-  if (status.over || !lastMove) { opts.onExit(); return; }
+  if (status.over || !lastMove) { token++; clearUndo(); opts.onExit(); return; }
   paused = true;
   const choice = await popup('<div class="popup-emoji">🏠</div><h2>Vill du sluta spela?</h2>', [
     { html: 'Ja, till menyn', className: 'btn-coral', value: true },
     { html: 'Nej, spela vidare', className: 'btn-green', value: false },
   ]);
   paused = false;
-  if (choice) { token++; opts.onExit(); }
+  if (choice) { token++; clearUndo(); opts.onExit(); }
 }

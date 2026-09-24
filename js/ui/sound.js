@@ -81,6 +81,7 @@ const SOUNDS = {
   lose: () => { tone(392, 0, 0.35, 'triangle', 0.2, 370); tone(330, 0.35, 0.6, 'triangle', 0.2, 290); },
   draw: () => { tone(G5, 0, 0.25, 'triangle', 0.2); tone(G5, 0.25, 0.35, 'triangle', 0.2); },
   nope: () => tone(160, 0, 0.14, 'triangle', 0.25, 120),
+  undo: () => tone(660, 0, 0.22, 'sine', 0.18, 330),
   star: () => [E5, G5, C6].forEach((f, i) => tone(f, i * 0.07, 0.2, 'sine', 0.2)),
 };
 
