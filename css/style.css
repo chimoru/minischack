@@ -395,8 +395,8 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 .friend-mode #friend-top { display: flex; align-items: center; gap: 14px; flex: none; rotate: 180deg; order: 1; }
 
 /* Ångra-knappen: bara i kompisläget. Aktiv i 4 s efter ens drag – ringen krymper under tiden. */
-.undo-btn { display: none; position: relative; font-size: 24px; }
-.friend-mode .undo-btn { display: flex; align-items: center; justify-content: center; }
+.undo-btn { position: relative; font-size: 24px; }
+#screen-game:not(.friend-mode) .undo-btn { display: none; }
 .undo-btn:disabled { opacity: 0.3; box-shadow: none; transform: none; cursor: default; }
 .undo-ring { position: absolute; inset: 3px; width: calc(100% - 6px); height: calc(100% - 6px); rotate: -90deg; pointer-events: none; }
 .undo-ring circle { fill: none; stroke: var(--green); stroke-width: 3.5; stroke-linecap: round;
@@ -426,7 +426,11 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 .btn-icon { width: 64px; height: 64px; font-size: 0; }
 .btn-icon .icon { width: 100%; height: 100%; }
 @media (max-width: 420px) { .btn-icon { width: 54px; height: 54px; } }
-.btn-round .icon { width: 32px; height: 32px; }
+/* Runda knappar: centrera ikonen exakt (annars placeras den som text, med plats för
+   bokstävernas "svansar" under – då hamnar den några pixlar för högt) */
+.btn-round { display: inline-flex; align-items: center; justify-content: center; line-height: 0; }
+.btn-round [data-icon] { display: flex; }
+.btn-round .icon { width: 32px; height: 32px; display: block; }
 .icon-slot { display: inline-flex; vertical-align: middle; }
 .icon-slot .icon { width: 1.35em; height: 1.35em; }
 .btn-with-icon { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
