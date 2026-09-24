@@ -20,6 +20,7 @@ const FILES = [
   'js/ui/computer.js',
   'js/ui/game.js',
   'js/ui/icons.js',
+  'js/ui/install.js',
   'js/ui/learn.js',
   'js/ui/lesson-data.js',
   'js/ui/lessons.js',

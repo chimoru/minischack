@@ -504,3 +504,38 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
 .value-king { font-size: 17px; font-weight: 700; color: var(--ink-soft); }
 /* Regelbrädet: lite mindre på låga skärmar, så text + bräde + knappar alltid ryms */
 .learn-board#rule-board { --size: min(calc(100vw - 32px), calc(100vh - 385px), 620px); }
+
+/* ---------- Spara på hemskärmen (glider upp nerifrån) ---------- */
+.install-backdrop {
+  position: fixed; inset: 0; z-index: 30; background: rgba(59, 42, 26, 0);
+  display: flex; align-items: flex-end; justify-content: center;
+  transition: background 0.3s;
+}
+.install-backdrop.open { background: rgba(59, 42, 26, 0.35); }
+.install-sheet {
+  width: min(560px, 100%); margin: 0 12px max(12px, env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 14px;
+  transform: translateY(110%); transition: transform 0.3s ease-out;
+}
+.install-backdrop.open .install-sheet { transform: none; }
+.install-head { display: flex; align-items: center; gap: 14px; }
+.install-app-icon { width: 64px; height: 64px; border-radius: 15px; flex: none; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); }
+.install-head h2 { font-size: clamp(20px, 5vw, 24px); }
+.install-sub { margin: 4px 0 0; font-size: 16px; color: var(--ink-soft); }
+.install-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: step; }
+.install-steps li {
+  display: flex; align-items: center; gap: 12px; font-size: 17px; line-height: 1.3;
+  background: var(--bg); border-radius: 16px; padding: 10px 12px; counter-increment: step;
+}
+.install-steps li::before {
+  content: counter(step); flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--yellow);
+  display: flex; align-items: center; justify-content: center; font-weight: 800;
+}
+.step-icon { flex: none; width: 34px; height: 34px; font-size: 0; }
+.step-icon .icon { width: 100%; height: 100%; }
+.install-buttons { display: flex; gap: 10px; }
+.install-buttons .btn { flex: 1; }
+.install-never {
+  font: inherit; font-size: 15px; font-weight: 700; color: var(--ink-soft); background: none; border: 0;
+  text-decoration: underline; cursor: pointer; align-self: center; padding: 4px;
+}

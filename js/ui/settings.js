@@ -2,6 +2,7 @@
 import { store } from '../storage.js';
 import { pieceSVG } from './pieces.js';
 import { icon } from './icons.js';
+import { canInstall, showInstallHint } from './install.js';
 import { sfx } from './sound.js';
 
 const el = document.getElementById('settings-content');
@@ -36,11 +37,17 @@ export function renderSettings() {
           ${styleButton('classic', 'Klassiska')}
         </div>
       </div>
+      ${canInstall() ? `
+      <button class="setting card" type="button" data-install-open>
+        <span class="setting-icon" aria-hidden="true">${icon('addHome')}</span>
+        <span class="setting-text"><strong>Spara på hemskärmen</strong><small>Så öppnas spelet som en app, även utan internet</small></span>
+      </button>` : ''}
       <p class="about">MiniSchack · version 1<br><small>Typsnitt: Nunito (SIL Open Font License)</small></p>
     </div>`;
 }
 
 el.addEventListener('click', (e) => {
+  if (e.target.closest('[data-install-open]')) { sfx('select'); showInstallHint(); return; }
   const key = e.target.closest('[data-toggle]')?.dataset.toggle;
   if (key) {
     store.setSetting(key, !store.settings[key]);

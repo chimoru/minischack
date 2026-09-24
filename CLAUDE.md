@@ -42,5 +42,8 @@ På `localhost` hämtar service workern alltid färska filer först (sparad kopi
 servern är nere). På riktiga adressen gäller sparad kopia först.
 Offline kan testas lokalt genom att stoppa servern och ladda om.
 
+"Spara på hemskärmen"-rutan (`js/ui/install.js`) visas bara på mobil/surfplatta som inte redan
+kört appen installerad. Testa varianterna med `?install=ios | ipad | android | inapp` i adressen.
+
 Testa med **riktiga** klick/dragningar (inte bara syntetiska `pointerdown`) – ett riktigt
 tryck skickar även ett `click` efteråt, och det har orsakat buggar tidigare.

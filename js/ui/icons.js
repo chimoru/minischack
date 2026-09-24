@@ -186,6 +186,29 @@ Object.assign(ICONS, {
   ],
 });
 
+// ---------- Spara på hemskärmen (instruktionen) ----------
+Object.assign(ICONS, {
+  // Safaris Dela-knapp: en ruta med en pil uppåt
+  share: [
+    { line: 'M22 26 H16 V56 H48 V26 H42', color: 'ink' },
+    { line: 'M32 40 V6', color: 'ink' },
+    { line: 'M22 16 L32 6 L42 16', color: 'ink' },
+  ],
+  // "Lägg till på hemskärmen": en ruta med ett plus
+  addHome: [
+    { r: [10, 10, 44, 44, 10], fill: C.white },
+    { line: 'M32 21 V43', color: 'ink' }, { line: 'M21 32 H43', color: 'ink' },
+  ],
+  // Menyknappen i Chrome på Android: tre prickar på rad uppifrån och ner
+  menuDots: [
+    { dot: [32, 14, 5.5] }, { dot: [32, 32, 5.5] }, { dot: [32, 50, 5.5] },
+  ],
+  // "Fler"-knappen i nyare Safari: tre prickar i rad
+  moreDots: [
+    { dot: [14, 32, 5.5] }, { dot: [32, 32, 5.5] }, { dot: [50, 32, 5.5] },
+  ],
+});
+
 // ---------- Djuren (nivåerna mot datorn): icon('chick'), icon('bunny'), icon('fox'), icon('owl') ----------
 const cheeks = (y, dx = 12) => [
   { c: [32 - dx, y, 3.2], fill: C.pink, soft: true }, { c: [32 + dx, y, 3.2], fill: C.pink, soft: true },

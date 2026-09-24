@@ -5,6 +5,7 @@ import { computerMove } from './ui/computer.js';
 import { renderSettings } from './ui/settings.js';
 import { initLearn, showHub } from './ui/learn.js';
 import { icon } from './ui/icons.js';
+import { maybeShowInstallHint } from './ui/install.js';
 import { pieceSVG } from './ui/pieces.js';
 
 // Fyll alla platshållare <… data-icon="namn"> i index.html med rätt ikon
@@ -30,7 +31,7 @@ export function show(name) {
   for (const s of screens) {
     document.getElementById(`screen-${s}`).hidden = s !== name;
   }
-  if (name === 'menu') renderMenu();
+  if (name === 'menu') { renderMenu(); maybeShowInstallHint(); }
   if (name === 'settings') renderSettings();
   if (name === 'levels') renderLevels();
   if (name === 'learn') showHub();
