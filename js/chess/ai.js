@@ -15,6 +15,15 @@ import { legalMoves, makeMove, unmakeMove, inCheck, typeOf, isWhite } from './ru
 // takeMate  – chans att den ser en matt den kan göra (1 = alltid)
 // mistake   – chans att medvetet välja ett sämre drag, högst `margin` poäng sämre
 export const LEVEL_SETTINGS = {
+  chick: { depth: 1, quiesce: false, random: 0.7, takeMate: 0.15, mistake: 0.6, margin: 800 },
+  bunny: { depth: 1, quiesce: false, random: 0.3, takeMate: 0.5, mistake: 0.5, margin: 500 },
+  fox: { depth: 2, quiesce: false, random: 0.05, takeMate: 0.9, mistake: 0.3, margin: 250 },
+  owl: { depth: 3, quiesce: true, takeMate: 1, mistake: 0.08, margin: 80 },
+};
+
+// Tidigare inställningar (sänktes ett snäpp 2026-09-24) – används av tests/ai.test.mjs
+// för att bevisa att varje nivå blev lättare.
+export const PREVIOUS_LEVEL_SETTINGS = {
   chick: { depth: 1, quiesce: false, random: 0.5, takeMate: 0.3, mistake: 0.5, margin: 600 },
   bunny: { depth: 1, quiesce: false, random: 0.1, takeMate: 0.7, mistake: 0.45, margin: 450 },
   fox: { depth: 2, quiesce: true, takeMate: 1, mistake: 0.22, margin: 160 },
@@ -190,7 +199,8 @@ class Search {
 
 // Väljer datorns drag. `state` ändras inte (kopian görs av den som anropar).
 export function chooseMove(state, levelId, random = Math.random) {
-  const settings = LEVEL_SETTINGS[levelId] ?? LEVEL_SETTINGS.bunny;
+  // levelId är en nivå ('chick' …) eller direkt ett inställningsobjekt (används av testerna)
+  const settings = typeof levelId === 'object' ? levelId : LEVEL_SETTINGS[levelId] ?? LEVEL_SETTINGS.bunny;
   const moves = order(legalMoves(state));
   const pick = (list) => list[Math.floor(random() * list.length)];
   if (moves.length === 1) return moves[0];
