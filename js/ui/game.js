@@ -2,7 +2,7 @@
 import {
   newGame, legalMoves, playMove, gameStatus, kingSquare, colorOf, typeOf, cloneState,
 } from '../chess/rules.js';
-import { BoardView } from './board.js';
+import { BoardView, slidesFor } from './board.js';
 import { pieceSVG } from './pieces.js';
 import { icon } from './icons.js';
 import { popup } from './popup.js';
@@ -99,14 +99,6 @@ async function chooseMove(moves, dropped) {
 const SLIDE_COMPUTER_MS = 700;
 const SLIDE_TAP_MS = 200;
 
-// Vilka pjäser som rör sig i ett drag (vid rockad flyttar även tornet)
-function slidesFor(m) {
-  const slides = [{ from: m.from, to: m.to, piece: m.piece }];
-  const rook = m.piece === 'K' ? 'R' : 'r';
-  if (m.flag === 'castleK') slides.push({ from: m.to + 1, to: m.to - 1, piece: rook });
-  if (m.flag === 'castleQ') slides.push({ from: m.to - 2, to: m.to + 1, piece: rook });
-  return slides;
-}
 
 async function doMove(m, slideMs = 0) {
   selected = -1;

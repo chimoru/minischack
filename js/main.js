@@ -3,7 +3,7 @@ import { store } from './storage.js';
 import { startGame, confirmExit, setComputerPlayer } from './ui/game.js';
 import { computerMove } from './ui/computer.js';
 import { renderSettings } from './ui/settings.js';
-import { initLearn, showPicker } from './ui/learn.js';
+import { initLearn, showHub } from './ui/learn.js';
 import { icon } from './ui/icons.js';
 import { pieceSVG } from './ui/pieces.js';
 
@@ -33,7 +33,7 @@ export function show(name) {
   if (name === 'menu') renderMenu();
   if (name === 'settings') renderSettings();
   if (name === 'levels') renderLevels();
-  if (name === 'learn') showPicker();
+  if (name === 'learn') showHub();
   window.scrollTo(0, 0);
 }
 

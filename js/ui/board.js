@@ -3,6 +3,15 @@
 import { pieceSVG } from './pieces.js';
 import { icon } from './icons.js';
 
+// Vilka pjäser som rör sig i ett drag (vid rockad flyttar även tornet)
+export function slidesFor(m) {
+  const slides = [{ from: m.from, to: m.to, piece: m.piece }];
+  const rook = m.piece === 'K' ? 'R' : 'r';
+  if (m.flag === 'castleK') slides.push({ from: m.to + 1, to: m.to - 1, piece: rook });
+  if (m.flag === 'castleQ') slides.push({ from: m.to - 2, to: m.to + 1, piece: rook });
+  return slides;
+}
+
 export class BoardView {
   constructor(el, onSquare) {
     this.el = el;

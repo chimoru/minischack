@@ -20,6 +20,8 @@ const FILES = [
   'js/ui/game.js',
   'js/ui/icons.js',
   'js/ui/learn.js',
+  'js/ui/lesson-data.js',
+  'js/ui/lessons.js',
   'js/ui/pieces.js',
   'js/ui/popup.js',
   'js/ui/settings.js',

@@ -154,6 +154,38 @@ export const ICONS = {
   ],
 };
 
+// ---------- Lär dig spela: regler ----------
+Object.assign(ICONS, {
+  book: [
+    { d: 'M5 14 C15 9 24 11 31 16 V55 C24 50 15 49 5 52 Z', fill: C.white },
+    { d: 'M59 14 C49 9 40 11 33 16 V55 C40 50 49 49 59 52 Z', fill: C.white },
+    { d: 'M42 11 V27 L46 23 L50 27 V10 Z', fill: C.coral },
+  ],
+  flag: [
+    { line: 'M17 8 V58', color: 'ink' },
+    { d: 'M20 9 H50 L42 20 L50 31 H20 Z', fill: C.coral },
+  ],
+  target: [
+    { c: [32, 32, 25], fill: C.white }, { c: [32, 32, 16], fill: C.coral }, { c: [32, 32, 7], fill: C.white },
+  ],
+  alert: [
+    { d: 'M32 7 L60 55 H4 Z', fill: C.gold },
+    { line: 'M32 24 V38', color: 'ink' }, { dot: [32, 47, 3.8] },
+  ],
+  crown: [
+    { d: 'M7 22 L20 34 L32 14 L44 34 L57 22 L51 52 H13 Z', fill: C.gold },
+    { c: [7, 20, 4.5], fill: C.gold }, { c: [32, 11, 4.5], fill: C.gold }, { c: [57, 20, 4.5], fill: C.gold },
+    { r: [13, 44, 38, 8, 2], fill: C.coral },
+  ],
+  up: [
+    { c: [32, 32, 25], fill: C.green },
+    { line: 'M32 47 V19', color: 'white' }, { line: 'M20 30 L32 18 L44 30', color: 'white' },
+  ],
+  play: [
+    { d: 'M20 12 L52 32 L20 52 Z', fill: C.white },
+  ],
+});
+
 // ---------- Djuren (nivåerna mot datorn): icon('chick'), icon('bunny'), icon('fox'), icon('owl') ----------
 const cheeks = (y, dx = 12) => [
   { c: [32 - dx, y, 3.2], fill: C.pink, soft: true }, { c: [32 + dx, y, 3.2], fill: C.pink, soft: true },
@@ -203,7 +235,7 @@ Object.assign(ICONS, {
 });
 
 export const ICON_NAMES = {
-  friend: 'Mot en kompis', computer: 'Mot datorn', learn: 'Lär dig pjäserna', settings: 'Inställningar',
+  friend: 'Mot en kompis', computer: 'Mot datorn', learn: 'Lär dig spela', settings: 'Inställningar',
   profile: 'Profil', home: 'Hem', back: 'Tillbaka', undo: 'Ångra', again: 'Spela igen / Öva mer',
   pieces: 'Andra pjäser', check: 'Klar', trophy: 'Pokal', star: 'Stjärna', celebrate: 'Firande',
   draw: 'Oavgjort', heart: 'Bra kämpat', castle: 'Rockad', soundOn: 'Ljud på', soundOff: 'Ljud av',

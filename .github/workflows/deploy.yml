@@ -35,6 +35,9 @@ jobs:
       - name: Testa schackreglerna
         run: node tests/rules.test.mjs
 
+      - name: Kontrollera reglerna i "Lär dig spela"
+        run: node tests/lessons.test.mjs
+
       - name: Kontrollera att alla filer sparas för offline
         run: node tests/files.test.mjs
 

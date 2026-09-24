@@ -1,4 +1,6 @@
-// "Lär dig pjäserna": välj en pjäs, se vart den kan gå och fånga stjärnor.
+// "Lär dig spela": startsida med två delar –
+//   Pjäserna: välj en pjäs, se vart den kan gå och fånga stjärnor (här i filen)
+//   Reglerna: se lessons.js
 // Ingen motståndare, ingen press – bara pjäsen, gröna rutor och en stjärna att nå.
 import { legalMoves, makeMove, squareIndex } from '../chess/rules.js';
 import { BoardView } from './board.js';
@@ -7,6 +9,8 @@ import { icon } from './icons.js';
 import { popup } from './popup.js';
 import { sfx } from './sound.js';
 import { store } from '../storage.js';
+import { showRules, rulesBack } from './lessons.js';
+import { RULES } from './lesson-data.js';
 
 const STARS_TO_LEARN = 5;
 
@@ -29,23 +33,53 @@ let pieceSq = -1;
 let star = -1;
 let caught = 0;
 let sliding = false;     // en pjäs är på väg – vänta med nästa tryck
+let view = 'hub';        // 'hub' | 'picker' | 'practice' | 'rules'
 
 const style = () => store.settings.pieceStyle;
 const random = (list) => list[Math.floor(Math.random() * list.length)];
 
 export function initLearn(exit) {
   onExit = exit;
+  // Tillbaka: övning → pjäsväljare → startsida → menyn, och regel → regellista → startsida
   document.getElementById('learn-back').addEventListener('click', () => {
-    if (current) showPicker(); else onExit();
+    if (view === 'practice') showPicker();
+    else if (view === 'rules') { if (!rulesBack()) showHub(); }
+    else if (view === 'picker') showHub();
+    else onExit();
   });
+}
+
+// ---------- Startsidan: Pjäserna eller Reglerna ----------
+
+export function showHub() {
+  view = 'hub';
+  current = null;
+  board = null;
+  title.textContent = 'Lär dig spela';
+  const pieces = PIECES.filter((p) => store.learned.includes(p.type)).length;
+  const rules = RULES.filter((r) => store.learnedRules.includes(r.id)).length;
+  const card = (id, iconName, name, done, total, color) => `
+    <button class="btn btn-big ${color} hub-card" type="button" data-hub="${id}">
+      <span class="btn-icon" aria-hidden="true">${icon(iconName)}</span>${name}
+      <small class="hub-progress">${done} av ${total} klara ${done === total ? icon('trophy', 'icon-inline') : ''}</small>
+    </button>`;
+  content.innerHTML = `
+    <div class="learn-picker">
+      <p class="learn-intro">Vad vill du lära dig?</p>
+      <div class="hub-grid">
+        ${card('pieces', 'pieces', 'Pjäserna', pieces, PIECES.length, 'btn-blue')}
+        ${card('rules', 'book', 'Reglerna', rules, RULES.length, 'btn-coral')}
+      </div>
+    </div>`;
 }
 
 // ---------- Välj pjäs ----------
 
 export function showPicker() {
+  view = 'picker';
   current = null;
   board = null;
-  title.textContent = 'Lär dig pjäserna';
+  title.textContent = 'Pjäserna';
   const known = PIECES.filter((p) => store.learned.includes(p.type)).length;
   content.innerHTML = `
     <div class="learn-picker">
@@ -63,6 +97,9 @@ export function showPicker() {
 }
 
 content.addEventListener('click', (e) => {
+  const hub = e.target.closest('[data-hub]')?.dataset.hub;
+  if (hub === 'pieces') { showPicker(); return; }
+  if (hub === 'rules') { view = 'rules'; showRules(); return; }
   const type = e.target.closest('.learn-choice')?.dataset.piece;
   const piece = PIECES.find((p) => p.type === type);
   if (piece) startPractice(piece);
@@ -79,6 +116,7 @@ function emptyState() {
 }
 
 function startPractice(piece) {
+  view = 'practice';
   current = piece;
   caught = 0;
   sfx('select');

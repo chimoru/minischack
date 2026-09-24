@@ -8,7 +8,8 @@ const DEFAULTS = {
   name: '',
   wins: { chick: 0, bunny: 0, fox: 0, owl: 0 },
   settings: { sound: true, teaching: true, pieceStyle: 'kids' },
-  learned: [],          // pjäser man klarat i "Lär dig pjäserna"
+  learned: [],          // pjäser man klarat i "Lär dig spela"
+  learnedRules: [],     // regler man klarat i "Lär dig spela"
 };
 
 let data = load();
@@ -24,6 +25,7 @@ function load() {
         wins: { ...DEFAULTS.wins, ...saved.wins },
         settings: { ...DEFAULTS.settings, ...saved.settings },
         learned: Array.isArray(saved.learned) ? saved.learned : [],
+        learnedRules: Array.isArray(saved.learnedRules) ? saved.learnedRules : [],
       };
     }
   } catch { /* ignorera – vi börjar om från standardvärden */ }
@@ -47,4 +49,7 @@ export const store = {
 
   get learned() { return data.learned; },
   addLearned(type) { if (!data.learned.includes(type)) { data.learned.push(type); save(); } },
+
+  get learnedRules() { return data.learnedRules; },
+  addLearnedRule(id) { if (!data.learnedRules.includes(id)) { data.learnedRules.push(id); save(); } },
 };

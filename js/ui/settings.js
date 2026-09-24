@@ -28,7 +28,7 @@ export function renderSettings() {
   el.innerHTML = `
     <div class="settings-list">
       ${toggle('sound', icon(store.settings.sound ? 'soundOn' : 'soundOff'), 'Ljud', 'Ljud när pjäserna flyttas')}
-      ${toggle('teaching', icon('learn'), 'Hjälp att lära', 'Gröna rutor visar vart pjäsen kan gå, och "Lär dig pjäserna" finns i menyn')}
+      ${toggle('teaching', icon('learn'), 'Hjälp att lära', 'Gröna rutor visar vart pjäsen kan gå, och "Lär dig spela" finns i menyn')}
       <div class="card">
         <div class="setting-text"><strong>${icon('palette', 'icon-inline')} Pjäser</strong><small>Välj hur pjäserna ser ut</small></div>
         <div class="style-row">
