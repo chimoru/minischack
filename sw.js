@@ -10,6 +10,7 @@ const FILES = [
   'index.html',
   'manifest.webmanifest',
   'css/style.css',
+  'fonts/nunito-latin.woff2',
   'js/main.js',
   'js/storage.js',
   'js/chess/rules.js',

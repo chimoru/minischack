@@ -1,5 +1,15 @@
 /* MiniSchack – lekfullt tema runt ett klassiskt bräde */
 
+/* Typsnittet Nunito ligger med i appen (fonts/), så texten ser likadan ut på iPhone och
+   Android och fungerar offline. Licens: SIL Open Font License, se fonts/OFL.txt. */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600 900;
+  font-display: swap;
+  src: url('../fonts/nunito-latin.woff2') format('woff2');
+}
+
 :root {
   --bg: #fff6df;
   --bg-dot: #ffe9b0;
@@ -22,7 +32,7 @@
   --check: rgba(255, 60, 60, 0.7);
 
   --radius: 22px;
-  --font: ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font: 'Nunito', ui-rounded, "SF Pro Rounded", "Arial Rounded MT Bold", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -35,6 +45,7 @@ html, body {
   background-size: 26px 26px;
   color: var(--ink);
   font-family: var(--font);
+  font-weight: 600;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
   user-select: none;

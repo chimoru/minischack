@@ -13,7 +13,8 @@ function walk(dir) {
   });
 }
 const needed = [...walk(join(root, 'js')), ...walk(join(root, 'css')),
-  ...walk(join(root, 'icons')).filter((f) => f.endsWith('.png')), 'index.html', 'manifest.webmanifest'];
+  ...walk(join(root, 'icons')).filter((f) => f.endsWith('.png')),
+  ...walk(join(root, 'fonts')).filter((f) => f.endsWith('.woff2')), 'index.html', 'manifest.webmanifest'];
 
 const missing = needed.filter((f) => !listed.has(f));
 const extra = [...listed].filter((f) => f !== './' && !needed.includes(f));

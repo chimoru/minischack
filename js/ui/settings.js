@@ -36,7 +36,7 @@ export function renderSettings() {
           ${styleButton('classic', 'Klassiska')}
         </div>
       </div>
-      <p class="about">MiniSchack · version 1</p>
+      <p class="about">MiniSchack · version 1<br><small>Typsnitt: Nunito (SIL Open Font License)</small></p>
     </div>`;
 }
 
