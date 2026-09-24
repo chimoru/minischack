@@ -1,15 +1,16 @@
 // Inställningssidan: ljud, pedagogiskt stöd och pjässtil. Sparas direkt när man trycker.
 import { store } from '../storage.js';
 import { pieceSVG } from './pieces.js';
+import { icon } from './icons.js';
 import { sfx } from './sound.js';
 
 const el = document.getElementById('settings-content');
 
-function toggle(key, icon, title, subtitle) {
+function toggle(key, iconHtml, title, subtitle) {
   const on = store.settings[key];
   return `
     <button class="setting card" type="button" data-toggle="${key}" aria-pressed="${on}">
-      <span class="setting-icon" aria-hidden="true">${icon}</span>
+      <span class="setting-icon" aria-hidden="true">${iconHtml}</span>
       <span class="setting-text"><strong>${title}</strong><small>${subtitle}</small></span>
       <span class="switch ${on ? 'on' : ''}" aria-hidden="true"><span></span></span>
     </button>`;
@@ -26,10 +27,10 @@ export function renderSettings() {
 
   el.innerHTML = `
     <div class="settings-list">
-      ${toggle('sound', store.settings.sound ? '🔊' : '🔇', 'Ljud', 'Ljud när pjäserna flyttas')}
-      ${toggle('teaching', '🎓', 'Hjälp att lära', 'Gröna rutor visar vart pjäsen kan gå, och "Lär dig pjäserna" finns i menyn')}
+      ${toggle('sound', icon(store.settings.sound ? 'soundOn' : 'soundOff'), 'Ljud', 'Ljud när pjäserna flyttas')}
+      ${toggle('teaching', icon('learn'), 'Hjälp att lära', 'Gröna rutor visar vart pjäsen kan gå, och "Lär dig pjäserna" finns i menyn')}
       <div class="card">
-        <div class="setting-text"><strong>🎨 Pjäser</strong><small>Välj hur pjäserna ser ut</small></div>
+        <div class="setting-text"><strong>${icon('palette', 'icon-inline')} Pjäser</strong><small>Välj hur pjäserna ser ut</small></div>
         <div class="style-row">
           ${styleButton('kids', 'Tecknade')}
           ${styleButton('classic', 'Klassiska')}

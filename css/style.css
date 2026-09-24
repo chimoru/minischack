@@ -419,3 +419,28 @@ h2 { font-size: clamp(22px, 4.5vw, 32px); }
    hopp- och skakanimationer fortsätter fungera ovanpå vridningen. */
 .flip-black .piece-b { rotate: 180deg; }
 .popup.flipped { rotate: 180deg; }
+
+/* ---------- Ikoner (egna SVG i stället för emojis) ---------- */
+.icon { width: 1.2em; height: 1.2em; flex: none; display: inline-block; }
+.icon-inline { vertical-align: -0.28em; }
+.btn-icon { width: 64px; height: 64px; font-size: 0; }
+.btn-icon .icon { width: 100%; height: 100%; }
+@media (max-width: 420px) { .btn-icon { width: 54px; height: 54px; } }
+.btn-round .icon { width: 32px; height: 32px; }
+.icon-slot { display: inline-flex; vertical-align: middle; }
+.icon-slot .icon { width: 1.35em; height: 1.35em; }
+.btn-with-icon { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.mascot { width: 120px; height: 120px; font-size: 0; }
+.mascot .piece { width: 100%; height: 100%; }
+.trophy-cup { font-size: 0; }
+.trophy-cup .icon { width: 64px; height: 64px; }
+@media (max-width: 420px) { .trophy-cup .icon { width: 52px; height: 52px; } }
+.setting-icon { font-size: 0; }
+.setting-icon .icon { width: 46px; height: 46px; }
+.star-mark .icon { width: 72%; height: 72%; }
+.learn-stars .icon { width: 36px; height: 36px; }
+.learned-check .icon { width: 20px; height: 20px; }
+.rotate-phone { font-size: 0; }
+.rotate-phone .icon { width: 100px; height: 100px; }
+.popup-icon .icon { width: 76px; height: 76px; }
+.level-wins .icon { width: 1.1em; height: 1.1em; }

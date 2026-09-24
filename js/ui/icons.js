@@ -1,0 +1,193 @@
+// Appens egna ikoner (i stället för emojis), ritade som SVG i en ruta på 64×64.
+//
+// Varje ikon består av delar:
+//   { d | c | r, fill: 'färg' }  – en fylld form (path, cirkel [cx,cy,r] eller rektangel [x,y,w,h,rx])
+//   { line: 'M…', color }        – en linje/pil (bara streck)
+//   { dot: [cx,cy,r] }           – en liten mörk detalj, t.ex. ögon
+// Samma former kan ritas i olika stilar (se STYLES), så alla ikoner hör ihop.
+
+const C = {
+  ink: '#4a3424', white: '#ffffff', cream: '#fff6df', gold: '#ffc933', coral: '#ff7a6b',
+  blue: '#4fa8ff', green: '#4cc38a', purple: '#a77bf3', dark: '#3d3a7a', brown: '#9a6a44',
+  pink: '#ff9d9d', grey: '#e3e8f2',
+};
+
+// Enkel bonde (används av flera ikoner)
+const pawn = (x, fill, s = 1) => {
+  const t = (v) => (v * s).toFixed(1);
+  return [
+    { d: `M${x - 9 * s} 56 C${x - 8 * s} 46 ${x - 5 * s} 40 ${x - 4 * s} 33 L${x + 4 * s} 33 C${x + 5 * s} 40 ${x + 8 * s} 46 ${x + 9 * s} 56 Z`, fill },
+    { r: [x - 12 * s, 52, 24 * s, 7, 3.5], fill },
+    { c: [x, 24 - (s - 1) * 6, t(9)], fill },
+  ];
+};
+
+function gearPath(cx, cy, rOut, rIn, teeth) {
+  const pts = [];
+  for (let i = 0; i < teeth * 2; i++) {
+    const a0 = (Math.PI * i) / teeth - Math.PI / teeth / 2;
+    const a1 = a0 + Math.PI / teeth;
+    const r = i % 2 === 0 ? rOut : rIn;
+    pts.push([cx + r * Math.cos(a0 + 0.08), cy + r * Math.sin(a0 + 0.08)]);
+    pts.push([cx + r * Math.cos(a1 - 0.08), cy + r * Math.sin(a1 - 0.08)]);
+  }
+  return `M${pts.map((p) => p.map((v) => v.toFixed(1)).join(' ')).join(' L')} Z`;
+}
+
+function starPath(cx, cy, R, r) {
+  const pts = [];
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + (Math.PI * i) / 5;
+    const rad = i % 2 ? r : R;
+    pts.push(`${(cx + rad * Math.cos(a)).toFixed(1)} ${(cy + rad * Math.sin(a)).toFixed(1)}`);
+  }
+  return `M${pts.join(' L')} Z`;
+}
+
+export const ICONS = {
+  friend: [...pawn(19, C.white), ...pawn(45, C.dark)],
+  computer: [
+    { line: 'M32 7 V15', color: 'ink' },
+    { c: [32, 7, 4.5], fill: C.coral },
+    { r: [5, 25, 7, 14, 3.5], fill: C.coral },
+    { r: [52, 25, 7, 14, 3.5], fill: C.coral },
+    { r: [11, 15, 42, 36, 11], fill: C.grey },
+    { dot: [24, 30, 4.5] }, { dot: [40, 30, 4.5] },
+    { line: 'M24 41 Q32 46 40 41', color: 'ink' },
+  ],
+  learn: [
+    { d: 'M17 31 V43 C17 50 47 50 47 43 V31 L32 38 Z', fill: C.dark },
+    { d: 'M4 25 L32 13 L60 25 L32 37 Z', fill: C.dark },
+    { line: 'M55 27 V42', color: 'gold' },
+    { c: [55, 45, 4.5], fill: C.gold },
+  ],
+  settings: [
+    { d: `${gearPath(32, 32, 27, 20, 8)} M32 22 A10 10 0 1 0 32.01 22 Z`, fill: C.grey, evenodd: true },
+  ],
+  home: [
+    { r: [42, 12, 7, 14, 1.5], fill: C.coral },
+    { r: [14, 28, 36, 26, 3], fill: C.cream },
+    { d: 'M6 31 L32 9 L58 31 Z', fill: C.coral },
+    { r: [27, 38, 10, 16, 3], fill: C.brown },
+  ],
+  back: [
+    { line: 'M48 32 H18', color: 'ink' },
+    { line: 'M31 17 L16 32 L31 47', color: 'ink' },
+  ],
+  undo: [
+    { line: 'M20 25 H38 A12.5 12.5 0 0 1 38 50 H25', color: 'ink' },
+    { line: 'M29 15 L18 25 L29 35', color: 'ink' },
+  ],
+  again: [
+    { line: 'M49 28 A18 18 0 0 0 17 21', color: 'ink' },
+    { line: 'M14 11 L16 22 L27 20', color: 'ink' },
+    { line: 'M15 36 A18 18 0 0 0 47 43', color: 'ink' },
+    { line: 'M50 53 L48 42 L37 44', color: 'ink' },
+  ],
+  pieces: [...pawn(32, C.white, 1.25)],
+  check: [
+    { line: 'M15 33 L27 45 L50 20', color: 'ink' },
+  ],
+  profile: [
+    { c: [32, 32, 25], fill: C.gold },
+    { dot: [24, 28, 3.6] }, { dot: [40, 28, 3.6] },
+    { line: 'M22 38 Q32 47 42 38', color: 'ink' },
+    { c: [17, 37, 3.5], fill: C.pink, soft: true }, { c: [47, 37, 3.5], fill: C.pink, soft: true },
+  ],
+  trophy: [
+    { line: 'M18 17 H11 C9 17 9 29 19 30', color: 'gold' },
+    { line: 'M46 17 H53 C55 17 55 29 45 30', color: 'gold' },
+    { r: [28, 38, 8, 11, 1], fill: C.gold },
+    { r: [18, 47, 28, 9, 3], fill: C.brown },
+    { d: 'M17 9 H47 V22 C47 33 40 40 32 40 C24 40 17 33 17 22 Z', fill: C.gold },
+    { line: 'M24 15 V23', color: 'white' },
+  ],
+  star: [
+    { d: starPath(32, 34, 27, 12), fill: C.gold },
+  ],
+  celebrate: [
+    { d: 'M8 56 L20 24 L40 44 Z', fill: C.coral },
+    { line: 'M14 43 L25 51', color: 'white' },
+    { line: 'M18 33 L32 45', color: 'white' },
+    { c: [38, 12, 4], fill: C.gold }, { c: [53, 22, 3.5], fill: C.blue },
+    { c: [51, 40, 3.5], fill: C.green }, { c: [28, 8, 3], fill: C.purple },
+    { line: 'M32 26 Q37 18 45 20', color: 'purple' },
+    { line: 'M38 36 Q46 32 54 34', color: 'blue' },
+  ],
+  draw: [
+    { c: [32, 32, 25], fill: C.blue },
+    { r: [18, 22, 28, 6.5, 3.25], fill: C.white },
+    { r: [18, 35.5, 28, 6.5, 3.25], fill: C.white },
+  ],
+  heart: [
+    { d: 'M32 55 C14 43 7 33 7 23 C7 15 13 9 21 9 C26 9 30 12 32 16 C34 12 38 9 43 9 C51 9 57 15 57 23 C57 33 50 43 32 55 Z', fill: C.coral },
+    { line: 'M17 20 Q18 15 23 15', color: 'white' },
+  ],
+  castle: [
+    { line: 'M32 13 V3', color: 'ink' },
+    { d: 'M33 3 L45 7 L33 11 Z', fill: C.coral },
+    { d: 'M13 14 H22 V20 H28 V14 H36 V20 H42 V14 H51 V30 H13 Z', fill: C.grey },
+    { r: [16, 28, 32, 28, 2], fill: C.grey },
+    { d: 'M26 56 V46 A6 6 0 0 1 38 46 V56 Z', fill: C.brown },
+  ],
+  soundOn: [
+    { d: 'M8 24 H19 L32 13 V51 L19 40 H8 Z', fill: C.blue },
+    { line: 'M40 24 Q46 32 40 40', color: 'ink' },
+    { line: 'M47 17 Q57 32 47 47', color: 'ink' },
+  ],
+  soundOff: [
+    { d: 'M8 24 H19 L32 13 V51 L19 40 H8 Z', fill: C.grey },
+    { line: 'M41 25 L55 39', color: 'coral' },
+    { line: 'M55 25 L41 39', color: 'coral' },
+  ],
+  palette: [
+    { d: 'M32 7 C16 7 6 19 6 32 C6 46 18 57 30 57 C36 57 37 51 34 47 C31 43 33 39 38 39 H45 C53 39 58 34 58 27 C58 15 46 7 32 7 Z', fill: C.cream },
+    { c: [20, 24, 5], fill: C.coral }, { c: [32, 17, 5], fill: C.blue },
+    { c: [45, 22, 5], fill: C.green }, { c: [17, 38, 5], fill: C.purple },
+  ],
+  phone: [
+    { r: [19, 6, 26, 52, 6], fill: C.dark },
+    { r: [23, 12, 18, 36, 2], fill: C.blue },
+    { c: [32, 53, 2.5], fill: C.white },
+  ],
+};
+
+export const ICON_NAMES = {
+  friend: 'Mot en kompis', computer: 'Mot datorn', learn: 'Lär dig pjäserna', settings: 'Inställningar',
+  profile: 'Profil', home: 'Hem', back: 'Tillbaka', undo: 'Ångra', again: 'Spela igen / Öva mer',
+  pieces: 'Andra pjäser', check: 'Klar', trophy: 'Pokal', star: 'Stjärna', celebrate: 'Firande',
+  draw: 'Oavgjort', heart: 'Bra kämpat', castle: 'Rockad', soundOn: 'Ljud på', soundOff: 'Ljud av',
+  palette: 'Pjässtil', phone: 'Vänd telefonen',
+};
+
+const INK = C.ink;
+
+function shape(p, attrs) {
+  const a = Object.entries(attrs).map(([k, v]) => `${k}="${v}"`).join(' ');
+  if (p.d) return `<path d="${p.d}" ${p.evenodd ? 'fill-rule="evenodd" ' : ''}${a}/>`;
+  if (p.c) return `<circle cx="${p.c[0]}" cy="${p.c[1]}" r="${p.c[2]}" ${a}/>`;
+  if (p.r) return `<rect x="${p.r[0]}" y="${p.r[1]}" width="${p.r[2]}" height="${p.r[3]}" rx="${p.r[4] ?? 0}" ${a}/>`;
+  if (p.dot) return `<circle cx="${p.dot[0]}" cy="${p.dot[1]}" r="${p.dot[2]}" ${a}/>`;
+  return '';
+}
+
+// Ritar en ikon i den tecknade stilen: färgade former med tjock mörk kontur, precis
+// som de tecknade pjäserna. Färgade linjer (t.ex. pokalens handtag) får också kontur.
+// Exempel: icon('home')  eller  icon('star', 'icon-inline')
+export function icon(name, className = '') {
+  const parts = ICONS[name];
+  if (!parts) return '';
+  let out = '';
+  for (const p of parts) {
+    if (p.line) {
+      const color = p.color === 'ink' ? INK : C[p.color];
+      if (p.color !== 'ink') out += `<path d="${p.line}" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`;
+      out += `<path d="${p.line}" fill="none" stroke="${color}" stroke-width="${p.color === 'ink' ? 6 : 4.5}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    } else if (p.dot) {
+      out += shape(p, { fill: INK });
+    } else {
+      out += shape(p, p.soft ? { fill: p.fill, opacity: 0.8 } : { fill: p.fill, stroke: INK, 'stroke-width': 3.5, 'stroke-linejoin': 'round' });
+    }
+  }
+  return `<svg class="icon ${className}" viewBox="0 0 64 64" aria-hidden="true">${out}</svg>`;
+}

@@ -19,12 +19,12 @@
     <!-- Första start: välj namn -->
     <section class="screen" id="screen-name" hidden>
       <div class="card center">
-        <div class="mascot" aria-hidden="true">♞</div>
+        <div class="mascot" aria-hidden="true" data-icon="knight"></div>
         <h1>Hej! Vad heter du?</h1>
         <form id="name-form" autocomplete="off">
           <input id="name-input" class="big-input" type="text" maxlength="16"
                  placeholder="Skriv ditt namn" aria-label="Ditt namn">
-          <button class="btn btn-green" type="submit">Klar ✔</button>
+          <button class="btn btn-green btn-with-icon" type="submit">Klar <span data-icon="check" class="icon-slot"></span></button>
         </form>
       </div>
     </section>
@@ -34,7 +34,7 @@
       <header class="menu-header">
         <h1 class="logo">Mini<span>Schack</span></h1>
         <button class="profile-chip" id="profile-chip" type="button">
-          <span aria-hidden="true">🙂</span> <span id="profile-name"></span>
+          <span data-icon="profile" class="icon-slot"></span> <span id="profile-name"></span>
         </button>
       </header>
 
@@ -42,16 +42,16 @@
 
       <nav class="menu-grid">
         <button class="btn btn-big btn-blue" data-go="friend">
-          <span class="btn-icon" aria-hidden="true">👫</span>Mot en kompis
+          <span class="btn-icon" data-icon="friend"></span>Mot en kompis
         </button>
         <button class="btn btn-big btn-coral" data-go="levels">
-          <span class="btn-icon" aria-hidden="true">🤖</span>Mot datorn
+          <span class="btn-icon" data-icon="computer"></span>Mot datorn
         </button>
         <button class="btn btn-big btn-green" data-go="learn" id="learn-button">
-          <span class="btn-icon" aria-hidden="true">🎓</span>Lär dig pjäserna
+          <span class="btn-icon" data-icon="learn"></span>Lär dig pjäserna
         </button>
         <button class="btn btn-big btn-purple" data-go="settings">
-          <span class="btn-icon" aria-hidden="true">⚙️</span>Inställningar
+          <span class="btn-icon" data-icon="settings"></span>Inställningar
         </button>
       </nav>
     </section>
@@ -59,7 +59,7 @@
     <!-- Välj nivå mot datorn -->
     <section class="screen" id="screen-levels" hidden>
       <header class="top-bar">
-        <button class="btn btn-round" data-go="menu" aria-label="Tillbaka">←</button>
+        <button class="btn btn-round" data-go="menu" aria-label="Tillbaka"><span data-icon="back"></span></button>
         <h2>Vem vill du spela mot?</h2>
       </header>
       <div class="level-grid" id="level-grid"></div>
@@ -71,14 +71,14 @@
       <div class="friend-top" id="friend-top">
         <div class="turn-banner" id="turn-banner-top" aria-live="polite"></div>
         <button class="btn btn-round undo-btn" id="undo-b" type="button" aria-label="Ångra ditt senaste drag" disabled>
-          <svg class="undo-ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16"/></svg><span>↩️</span>
+          <svg class="undo-ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16"/></svg><span data-icon="undo"></span>
         </button>
       </div>
       <header class="top-bar">
-        <button class="btn btn-round" id="game-back" aria-label="Till menyn">🏠</button>
+        <button class="btn btn-round" id="game-back" aria-label="Till menyn"><span data-icon="home"></span></button>
         <div class="turn-banner" id="turn-banner"></div>
         <button class="btn btn-round undo-btn" id="undo-w" type="button" aria-label="Ångra ditt senaste drag" disabled>
-          <svg class="undo-ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16"/></svg><span>↩️</span>
+          <svg class="undo-ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16"/></svg><span data-icon="undo"></span>
         </button>
       </header>
       <div class="board-wrap">
@@ -92,7 +92,7 @@
     <!-- Lär dig pjäserna -->
     <section class="screen" id="screen-learn" hidden>
       <header class="top-bar">
-        <button class="btn btn-round" id="learn-back" aria-label="Tillbaka">←</button>
+        <button class="btn btn-round" id="learn-back" aria-label="Tillbaka"><span data-icon="back"></span></button>
         <h2 id="learn-title">Lär dig pjäserna</h2>
       </header>
       <div id="learn-content"></div>
@@ -101,7 +101,7 @@
     <!-- Inställningar -->
     <section class="screen" id="screen-settings" hidden>
       <header class="top-bar">
-        <button class="btn btn-round" data-go="menu" aria-label="Tillbaka">←</button>
+        <button class="btn btn-round" data-go="menu" aria-label="Tillbaka"><span data-icon="back"></span></button>
         <h2>Inställningar</h2>
       </header>
       <div id="settings-content"></div>
@@ -111,7 +111,7 @@
 
   <!-- Visas när en mobil ligger ner: appen är gjord för att hållas upprätt -->
   <div class="rotate-hint" aria-live="polite">
-    <div class="rotate-phone" aria-hidden="true">📱</div>
+    <div class="rotate-phone" aria-hidden="true" data-icon="phone"></div>
     <p>Vänd telefonen</p>
   </div>
 

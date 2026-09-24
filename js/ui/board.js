@@ -1,6 +1,7 @@
 // Ritar schackbrädet och tar emot tryck på rutor.
 // Brädet vänds aldrig: vit står alltid nederst.
 import { pieceSVG } from './pieces.js';
+import { icon } from './icons.js';
 
 export class BoardView {
   constructor(el, onSquare) {
@@ -141,7 +142,7 @@ export class BoardView {
       const star = opts.stars?.includes(sq);
       const key = `${p ? `${p}-${opts.style}` : ''}${star ? '*' : ''}`;
       if (d.dataset.drawn !== key) {       // rita bara om rutan när något ändrats
-        d.innerHTML = (p ? pieceSVG(p, opts.style) : '') + (star ? '<span class="star-mark">⭐</span>' : '');
+        d.innerHTML = (p ? pieceSVG(p, opts.style) : '') + (star ? `<span class="star-mark">${icon('star')}</span>` : '');
         d.dataset.drawn = key;
       }
       if (p && sq === opts.arrived) {

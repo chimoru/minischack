@@ -7,6 +7,9 @@ Specen ligger i `~/Downloads/minischack-spec.md`. All text i appen är på svens
 - `js/chess/rules.js` – alla schackregler, ren logik utan DOM (körs även i node).
 - `js/chess/ai.js` – datormotorn (alfa-beta), nivåer i `LEVEL_SETTINGS`. Körs i `ai-worker.js`.
 - `js/ui/*` – bräde, parti, meny-delar, ljud (Web Audio), pjäser (SVG i kod).
+- `js/ui/icons.js` – appens egna ikoner (tecknad stil, som pjäserna). Använd `icon('namn')`
+  i JS eller `data-icon="namn"` i index.html – **inga emojis** i UI:t (undantag: djurmärkena
+  🐣🐰🦊🦉 tills egna ritats).
 - `js/storage.js` – allt som sparas (localStorage, nyckel `minischack.v1`).
 
 ## Regler vid ändringar

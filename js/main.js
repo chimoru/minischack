@@ -4,6 +4,13 @@ import { startGame, confirmExit, setComputerPlayer } from './ui/game.js';
 import { computerMove } from './ui/computer.js';
 import { renderSettings } from './ui/settings.js';
 import { initLearn, showPicker } from './ui/learn.js';
+import { icon } from './ui/icons.js';
+import { pieceSVG } from './ui/pieces.js';
+
+// Fyll alla platshållare <… data-icon="namn"> i index.html med rätt ikon
+for (const el of document.querySelectorAll('[data-icon]')) {
+  el.innerHTML = el.dataset.icon === 'knight' ? pieceSVG('N', 'kids') : icon(el.dataset.icon);
+}
 
 export const LEVELS = [
   { id: 'chick', emoji: '🐣', name: 'Kyckling', hint: 'Jättelätt', color: 'btn-yellow' },
@@ -73,7 +80,7 @@ function renderMenu() {
   shownWins = { ...store.wins };
 
   document.getElementById('trophy').innerHTML = `
-    <div class="trophy-cup ${cheer ? 'cheer' : ''}" aria-hidden="true">${total ? '🏆' : '⭐'}</div>
+    <div class="trophy-cup ${cheer ? 'cheer' : ''}" aria-hidden="true">${icon(total ? 'trophy' : 'star')}</div>
     <div>
       <div class="trophy-text">${text}</div>
       <div class="trophy-badges">${badges}</div>
@@ -85,7 +92,7 @@ function renderLevels() {
     <button class="btn btn-big ${l.color}" data-level="${l.id}">
       <span class="btn-icon" aria-hidden="true">${l.emoji}</span>${l.name}
       <small>${l.hint}</small>
-      ${store.wins[l.id] ? `<span class="level-wins">🏆 ${store.wins[l.id]}</span>` : ''}
+      ${store.wins[l.id] ? `<span class="level-wins">${icon('trophy', 'icon-inline')} ${store.wins[l.id]}</span>` : ''}
     </button>`).join('');
 }
 

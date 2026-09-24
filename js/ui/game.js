@@ -4,6 +4,7 @@ import {
 } from '../chess/rules.js';
 import { BoardView } from './board.js';
 import { pieceSVG } from './pieces.js';
+import { icon } from './icons.js';
 import { popup } from './popup.js';
 import { sfx } from './sound.js';
 import { store } from '../storage.js';
@@ -224,7 +225,7 @@ function update() {
 
 // Etikett för specialdrag, så man förstår vad som hände
 function moveTag(m) {
-  if (m?.flag === 'castleK' || m?.flag === 'castleQ') return '<span class="move-tag">Rockad! 🏰</span>';
+  if (m?.flag === 'castleK' || m?.flag === 'castleQ') return `<span class="move-tag">Rockad! ${icon('castle', 'icon-inline')}</span>`;
   if (m?.flag === 'ep') return '<span class="move-tag">En passant!</span>';
   return '';
 }
@@ -286,7 +287,7 @@ function showResult() {
       if (winner === 'w') {
         store.addWin(opts.level.id);
         sfx('win');
-        emoji = '🎉🏆🎉';
+        emoji = `${icon('celebrate', 'icon-inline')}${icon('trophy', 'icon-inline')}`;
         title = 'Schackmatt! Du vann!';
         sub = `Du har vunnit ${store.totalWins} ${store.totalWins === 1 ? 'gång' : 'gånger'}!`;
       } else {
@@ -297,13 +298,13 @@ function showResult() {
       }
     } else {
       sfx('win');
-      emoji = '🎉';
+      emoji = icon('celebrate', 'icon-inline');
       title = `Schackmatt! ${winner === 'w' ? 'Vit' : 'Svart'} vann!`;
       sub = '';
     }
   } else {
     sfx('draw');
-    emoji = '🤝';
+    emoji = icon('draw', 'icon-inline');
     title = 'Oavgjort!';
     sub = DRAW_REASON[status.result];
   }
@@ -313,7 +314,9 @@ function showResult() {
     for (const color of ['w', 'b']) {
       const el = color === 'w' ? banner : bannerTop;
       const won = status.winner === color;
-      const text = !status.winner ? '🤝 Oavgjort!' : won ? '🎉 Du vann!' : 'Schackmatt! Bra kämpat 💪';
+      const text = !status.winner ? `${icon('draw', 'icon-inline')} Oavgjort!`
+        : won ? `${icon('celebrate', 'icon-inline')} Du vann!`
+        : `Schackmatt! Bra kämpat ${icon('heart', 'icon-inline')}`;
       el.className = `turn-banner ${won || !status.winner ? 'turn-over' : 'turn-lost'}`;
       el.innerHTML = `<span>${text}</span>`;
     }
@@ -325,8 +328,8 @@ function showResult() {
   resultBar.innerHTML = `
     ${sub ? `<p class="result-sub">${sub}</p>` : ''}
     <div class="result-buttons">
-      <button class="btn btn-green" type="button" data-result="again">🔄 Spela igen</button>
-      <button class="btn btn-blue" type="button" data-result="menu">🏠 Menyn</button>
+      <button class="btn btn-green" type="button" data-result="again">${icon('again', 'icon-inline')} Spela igen</button>
+      <button class="btn btn-blue" type="button" data-result="menu">${icon('home', 'icon-inline')} Menyn</button>
     </div>`;
   resultBar.hidden = false;
   resultBar.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -342,7 +345,7 @@ resultBar.addEventListener('click', (e) => {
 export async function confirmExit() {
   if (status.over || !lastMove) { token++; clearUndo(); opts.onExit(); return; }
   paused = true;
-  const choice = await popup('<div class="popup-emoji">🏠</div><h2>Vill du sluta spela?</h2>', [
+  const choice = await popup(`<div class="popup-icon">${icon('home')}</div><h2>Vill du sluta spela?</h2>`, [
     { html: 'Ja, till menyn', className: 'btn-coral', value: true },
     { html: 'Nej, spela vidare', className: 'btn-green', value: false },
   ]);

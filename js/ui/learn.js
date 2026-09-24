@@ -3,6 +3,7 @@
 import { legalMoves, makeMove, squareIndex } from '../chess/rules.js';
 import { BoardView } from './board.js';
 import { pieceSVG, PIECE_NAMES } from './pieces.js';
+import { icon } from './icons.js';
 import { popup } from './popup.js';
 import { sfx } from './sound.js';
 import { store } from '../storage.js';
@@ -49,11 +50,11 @@ export function showPicker() {
   content.innerHTML = `
     <div class="learn-picker">
     <p class="learn-intro">Tryck på en pjäs!</p>
-    ${known ? `<p class="learn-progress">Du kan ${known} av ${PIECES.length} pjäser ${known === PIECES.length ? '🏆' : '⭐'}</p>` : ''}
+    ${known ? `<p class="learn-progress">Du kan ${known} av ${PIECES.length} pjäser ${icon(known === PIECES.length ? 'trophy' : 'star', 'icon-inline')}</p>` : ''}
     <div class="learn-grid">
       ${PIECES.map((p) => `
         <button class="btn btn-white learn-choice" type="button" data-piece="${p.type}">
-          ${store.learned.includes(p.type) ? '<span class="learned-check" aria-label="Klar">✔</span>' : ''}
+          ${store.learned.includes(p.type) ? `<span class="learned-check" aria-label="Klar">${icon('check')}</span>` : ''}
           <span class="learn-piece">${pieceSVG(p.type.toUpperCase(), style())}</span>
           <span>${PIECE_NAMES[p.type]}</span>
         </button>`).join('')}
@@ -131,7 +132,7 @@ function render() {
     stars: [star],
   });
   document.getElementById('learn-stars').innerHTML = Array.from({ length: STARS_TO_LEARN },
-    (_, i) => `<span class="${i < caught ? 'got' : ''}">⭐</span>`).join('');
+    (_, i) => `<span class="${i < caught ? 'got' : ''}">${icon('star')}</span>`).join('');
 }
 
 async function onSquare(sq) {
@@ -171,10 +172,10 @@ async function onSquare(sq) {
   const name = PIECES_DEFINITE[current.type];
   const choice = await popup(
     `<div class="popup-piece">${pieceSVG(current.type.toUpperCase(), style())}</div>
-     <h2>Bra jobbat! 🌟</h2><p class="popup-sub">Nu kan du ${name}!</p>`,
+     <h2>Bra jobbat! ${icon('celebrate', 'icon-inline')}</h2><p class="popup-sub">Nu kan du ${name}!</p>`,
     [
-      { html: '🔁 Öva mer', className: 'btn-green', value: 'again' },
-      { html: '♟️ Andra pjäser', className: 'btn-blue', value: 'picker' },
+      { html: `${icon('again', 'icon-inline')} Öva mer`, className: 'btn-green', value: 'again' },
+      { html: `${icon('pieces', 'icon-inline')} Andra pjäser`, className: 'btn-blue', value: 'picker' },
     ],
   );
   if (choice === 'again') startPractice(current); else showPicker();
